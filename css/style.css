@@ -434,6 +434,7 @@ button {
   text-align: left;
   font-size: 15px;
   font-weight: 600;
+  line-height: 1.5;
   color: #222222;
   cursor: pointer;
 }
