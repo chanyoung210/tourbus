@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>투어버스 예약 시스템</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script defer src="js/main.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="gnb">
+        <div class="gnb__inner">
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo1.svg" alt="KICC" />
+          </a>
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo2.svg" alt="Easy Tax Refund" />
+          </a>
+        </div>
+      </header>
+
+      <section class="visual">
+        <div class="visual__inner">
+          <div class="visual__copy">
+            <h1 class="visual__title">공항 → 도심 셔틀버스</h1>
+            <p class="visual__sub">예약 → 이메일QR티겟 → 탑승</p>
+          </div>
+          <div class="visual__media">
+            <img src="img/tiger-welcome.svg" alt="" />
+          </div>
+        </div>
+
+        <nav class="lang-tabs" aria-label="언어 선택">
+          <button class="lang-tab is-active" type="button">KO</button>
+          <button class="lang-tab" type="button">EN</button>
+          <button class="lang-tab" type="button">中文</button>
+          <button class="lang-tab" type="button">日本語</button>
+        </nav>
+      </section>
+
+      <main class="main">
+        <section class="main-actions" aria-label="빠른 이동">
+          <a class="action-button action-button--primary" href="#" target="_blank" rel="noopener">
+            <span>예약하기</span>
+            <img class="action-button__icon" src="img/icon-arrow-right.svg" alt="" />
+          </a>
+          <a class="action-button action-button--dark" href="#">
+            <span>실시간 위치</span>
+            <img class="action-button__icon" src="img/icon-arrow-right.svg" alt="" />
+          </a>
+        </section>
+
+        <section class="notice" aria-label="공지사항">
+          <button class="notice__header" type="button" aria-expanded="false">
+            <span class="notice__info">
+              <span class="notice__chip">공지</span>
+              <span class="notice__title">2026년 1월 13일 운행종료안내</span>
+            </span>
+            <img
+              class="notice__icon"
+              src="img/icon-arrow-down.svg"
+              alt=""
+            />
+          </button>
+          <div class="notice__content">
+            <p>
+              2026년 1월 13일부로 해당 노선 운행이 종료됩니다. 예약 완료
+              고객님께는 개별 안내 메일을 발송드릴 예정입니다.
+            </p>
+          </div>
+        </section>
+
+        <section class="route-cards" aria-label="노선 안내">
+          <div class="route-card">
+            <div class="route-card__content">
+              <h2 class="route-card__title">공항 → 도심 → 공항</h2>
+              <p class="route-card__sub">순환 노선(왕복 성격)</p>
+              <a class="route-card__btn" href="#">보기</a>
+            </div>
+            <img class="route-card__image" src="img/card-bus.png" alt="" />
+          </div>
+          <div class="route-card">
+            <div class="route-card__content">
+              <h2 class="route-card__title">공항 → 도심</h2>
+              <p class="route-card__sub">편도 노선</p>
+              <a class="route-card__btn" href="#">보기</a>
+            </div>
+            <img class="route-card__image" src="img/card-bus.png" alt="" />
+          </div>
+        </section>
+
+        <section class="info-cards" aria-label="이용 안내">
+          <article class="info-card">
+            <h2 class="info-card__title">이용방법</h2>
+            <ol class="info-card__list">
+              <li>홈페이지 ‘예약’ 버튼을 클릭하여 신청합니다.</li>
+              <li>
+                신청이 완료되면 잔여 좌석에 따라 예약 확정, 예약
+                대기메일이 발송됩니다.
+              </li>
+              <li>
+                발송된 메일에는 승차시 제시할 QR이 포함된 티켓 링크와 취소
+                링크가 포함되어있습니다.
+              </li>
+              <li>
+                예약일자에 맞추어 탑승하고, 버스 기사님께 QR코드를
+                제시합니다.
+              </li>
+            </ol>
+          </article>
+
+          <article class="info-card">
+            <h2 class="info-card__title">이용 안내사항</h2>
+            <ol class="info-card__list">
+              <li>홈페이지에서 사전 예약 시에만 가능합니다.</li>
+              <li>최대 2인까지만 동시 예약이 가능합니다.</li>
+              <li>동일 이메일로는 중복 예약이 불가합니다.</li>
+              <li>
+                이메일로 온 티켓 및 QR코드를 기사에게 제시하여야 하며,
+                QR코드가 없으면 탑승이 불가합니다.
+              </li>
+              <li>
+                버스는 노선도 내 정류장에 정차하며, 실제 버스 사진과
+                정류장 위치를 확인하여 탑승해주시기 바랍니다.
+              </li>
+              <li>
+                시간표를 꼭 확인하시기 바랍니다. 단, 도로 사정에 따라
+                지연될 수 있으므로 버스의 실시간 위치를 확인해주시기
+                바랍니다.
+              </li>
+              <li>
+                현장 인터넷 상황이 좋지 않을 경우를 대비하여 미리 티켓을
+                캡쳐해두는 것이 좋습니다.
+              </li>
+            </ol>
+          </article>
+        </section>
+
+        <section class="main-actions main-actions--spaced" aria-label="자주 묻는 질문">
+          <a class="action-button action-button--qna" href="qna.html">
+            <span>자주 묻는 질문</span>
+            <img class="action-button__icon" src="img/icon-arrow-right.svg" alt="" />
+          </a>
+        </section>
+
+        <section class="contact-card" aria-label="문의사항 및 제휴요청">
+          <h2 class="contact-card__title">문의사항 및 제휴요청</h2>
+          <p class="contact-card__sub">etrs@kicc.co.kr</p>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
