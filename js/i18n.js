@@ -112,7 +112,7 @@ $(function () {
       }
 
       try {
-        var url = new URL(href, window.location.origin);
+        var url = new URL(href, window.location.href);
         url.searchParams.set("lang", lang);
         $(this).attr("href", url.pathname + url.search + url.hash);
       } catch (e) {
