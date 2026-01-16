@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>실시간 위치</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script defer src="js/i18n.js"></script>
+    <script defer src="js/main.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="gnb">
+        <div class="gnb__inner">
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo1.svg" alt="KICC" />
+          </a>
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo2.svg" alt="Easy Tax Refund" />
+          </a>
+        </div>
+      </header>
+
+      <section class="realtime-visual">
+        <div class="realtime-visual__inner">
+          <div class="realtime-visual__back">
+            <a class="realtime-visual__back-link" href="index.html" aria-label="이전 페이지">
+              <img src="img/icon-arrow-right.svg" alt="" />
+            </a>
+            <span data-i18n="realtime.visual.title">실시간 위치</span>
+          </div>
+          <div class="realtime-visual__media">
+            <img src="img/tiger-hello.png" alt="" />
+          </div>
+        </div>
+      </section>
+
+      <main class="realtime">
+        <section class="route-tabs" aria-label="노선 선택">
+          <button class="route-tab is-active" type="button" data-route="t2-loop">
+            <span data-i18n="realtime.tab1">1회차 T2 → T2</span>
+          </button>
+          <button class="route-tab" type="button" data-route="t2-seoul">
+            <span data-i18n="realtime.tab2">2회차 T2 → T서울역</span>
+          </button>
+        </section>
+
+        <section class="route-map" aria-label="버스 노선도">
+          <div class="route-map__panel is-active" data-route-panel="t2-loop">
+            <p class="route-map__title" data-field="current-route-name">인천공항 T2</p>
+
+          <div class="route-map__body">
+            <div class="route-map__canvas">
+              <ul class="route-map__labels">
+                <li class="route-map__label" data-stop-name="인천공항 T1" data-stop-id="ICN_T1_IN" data-side="left" style="--stop-top: 13.4%">
+                  인천공항 T1
+                </li>
+                <li class="route-map__label" data-stop-name="파라다이스호텔" data-stop-id="PARADISE_IN" data-side="left" style="--stop-top: 23.8%">
+                  파라다이스호텔
+                </li>
+                <li class="route-map__label" data-stop-name="인천하얏트호텔" data-stop-id="HYATT_IN" data-side="left" style="--stop-top: 34.3%">
+                  인천하얏트호텔
+                </li>
+                <li class="route-map__label" data-stop-name="인천공항 T1" data-stop-id="ICN_T1_OUT" data-side="right" style="--stop-top: 13.4%">
+                  인천공항 T1
+                </li>
+                <li class="route-map__label" data-stop-name="파라다이스호텔" data-stop-id="PARADISE_OUT" data-side="right" style="--stop-top: 23.8%">
+                  파라다이스호텔
+                </li>
+                <li class="route-map__label" data-stop-name="인천하얏트호텔" data-stop-id="HYATT_OUT" data-side="right" style="--stop-top: 34.3%">
+                  인천하얏트호텔
+                </li>
+                <li class="route-map__label" data-stop-name="마포엠갤러리" data-stop-id="MAPO_M" data-side="right" style="--stop-top: 44.8%">
+                  마포엠갤러리
+                </li>
+                <li class="route-map__label" data-stop-name="마포 가든호텔" data-stop-id="MAPO_GARDEN" data-side="right" style="--stop-top: 55.2%">
+                  마포 가든호텔
+                </li>
+                <li class="route-map__label" data-stop-name="영등포 신세계" data-stop-id="YEONGDEUNGPO" data-side="right" style="--stop-top: 65.7%">
+                  영등포 신세계
+                </li>
+                <li class="route-map__label" data-stop-name="강남 신세계" data-stop-id="GANGNAM" data-side="right" style="--stop-top: 76.2%">
+                  강남 신세계
+                </li>
+                <li class="route-map__label" data-stop-name="명동 신세계" data-stop-id="MYEONGDONG" data-side="right" style="--stop-top: 86.6%">
+                  명동 신세계
+                </li>
+              </ul>
+
+              <svg
+                class="route-map__svg"
+                width="148"
+                height="516"
+                viewBox="0 0 148 516"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <rect x="16" y="20" width="116" height="476" rx="58" stroke="#EE6916" stroke-width="4"/>
+                <circle id="stop-ICN_T1_OUT" data-stop-id="ICN_T1_OUT" cx="132" cy="69" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <circle id="stop-ICN_T1_IN" data-stop-id="ICN_T1_IN" cx="16" cy="69" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <circle id="stop-PARADISE_OUT" data-stop-id="PARADISE_OUT" cx="132" cy="123" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <circle id="stop-PARADISE_IN" data-stop-id="PARADISE_IN" cx="16" cy="123" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <circle id="stop-HYATT_OUT" data-stop-id="HYATT_OUT" cx="132" cy="177" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <circle id="stop-HYATT_IN" data-stop-id="HYATT_IN" cx="16" cy="177" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <circle id="stop-MAPO_M" data-stop-id="MAPO_M" cx="132" cy="231" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <circle id="stop-MAPO_GARDEN" data-stop-id="MAPO_GARDEN" cx="132" cy="285" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <circle id="stop-YEONGDEUNGPO" data-stop-id="YEONGDEUNGPO" cx="132" cy="339" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <circle id="stop-GANGNAM" data-stop-id="GANGNAM" cx="132" cy="393" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <circle id="stop-MYEONGDONG" data-stop-id="MYEONGDONG" cx="132" cy="447" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                <rect x="55" width="36" height="36" rx="18" fill="#00458C"/>
+                <path d="M78.3167 24.6L76.6667 17.0833L79.875 13.875C81.25 12.5 81.7083 10.6667 81.25 9.75C80.3333 9.29167 78.5 9.75 77.125 11.125L73.9167 14.3333L66.4 12.6833C65.9417 12.5917 65.575 12.775 65.3917 13.1417L65.1167 13.6C64.9333 14.0583 65.025 14.5167 65.3917 14.7917L70.25 18L68.4167 20.75H65.6667L64.75 21.6667L67.5 23.5L69.3333 26.25L70.25 25.3333V22.5833L73 20.75L76.2083 25.6083C76.4833 25.975 76.9417 26.0667 77.4 25.8833L77.8583 25.7C78.225 25.425 78.4083 25.0583 78.3167 24.6Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <rect x="55" y="480" width="36" height="36" rx="18" fill="#0054A6"/>
+                <path d="M78.5 489.75H67.5C66.4874 489.75 65.6666 490.571 65.6666 491.583V502.583C65.6666 503.596 66.4874 504.417 67.5 504.417H78.5C79.5125 504.417 80.3333 503.596 80.3333 502.583V491.583C80.3333 490.571 79.5125 489.75 78.5 489.75Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M65.6666 497.083H80.3333" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M73 489.75V497.083" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M69.3333 504.417L67.5 507.167" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M78.5 507.167L76.6666 504.417" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M69.3334 500.75H69.3434" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M76.6666 500.75H76.6766" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <g filter="url(#filter0_d_14_812)">
+                  <path d="M124 258L132 266L140 258" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                </g>
+                <g filter="url(#filter1_d_14_812)">
+                  <path d="M113.799 469.142V480.456H125.113" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                </g>
+                <g filter="url(#filter2_d_14_812)">
+                  <path d="M106.142 39.4559H117.456V28.1422" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                </g>
+                <g filter="url(#filter3_d_14_812)">
+                  <path d="M24 266L16 258L8 266" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                </g>
+                <g filter="url(#filter4_d_14_812)">
+                  <path d="M36.4559 45.1127V33.7989H25.1422" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                </g>
+                <g filter="url(#filter5_d_14_812)">
+                  <path d="M36.2195 470.719L24.998 469.277L23.5562 480.499" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                </g>
+                <defs>
+                  <filter id="filter0_d_14_812" x="122" y="256" width="20" height="14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dy="2"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_14_812"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_14_812" result="shape"/>
+                  </filter>
+                  <filter id="filter1_d_14_812" x="109.799" y="467.142" width="17.3137" height="17.3137" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dx="-2" dy="2"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_14_812"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_14_812" result="shape"/>
+                  </filter>
+                  <filter id="filter2_d_14_812" x="104.142" y="26.1422" width="17.3137" height="17.3137" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dx="2" dy="2"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_14_812"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_14_812" result="shape"/>
+                  </filter>
+                  <filter id="filter3_d_14_812" x="6" y="254" width="20" height="14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dy="-2"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_14_812"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_14_812" result="shape"/>
+                  </filter>
+                  <filter id="filter4_d_14_812" x="23.1422" y="29.799" width="17.3137" height="17.3137" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dx="2" dy="-2"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_14_812"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_14_812" result="shape"/>
+                  </filter>
+                  <filter id="filter5_d_14_812" x="19.556" y="465.277" width="18.6637" height="17.2219" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                    <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                    <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                    <feOffset dx="-2" dy="-2"/>
+                    <feComposite in2="hardAlpha" operator="out"/>
+                    <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                    <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_14_812"/>
+                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_14_812" result="shape"/>
+                  </filter>
+                </defs>
+              </svg>
+
+              <div class="route-map__bus-wrap" data-field="bus-marker">
+                <img class="route-map__bus" src="img/bus-move.svg" alt="" />
+                <div class="route-map__eta" data-field="eta">
+                  <span data-i18n="realtime.eta">도착예정:</span>
+                  <strong><span data-field="eta-min">17</span>분</strong>
+                </div>
+              </div>
+            </div>
+            <p class="route-map__destination" data-i18n="realtime.destination">서울역</p>
+
+            <ul class="route-map__stops">
+              <li data-stop-id="ICN_T2" data-i18n="realtime.stop.icn_t2">인천공항 T2</li>
+              <li data-stop-id="ICN_T1_OUT" data-i18n="realtime.stop.icn_t1">인천공항 T1</li>
+              <li data-stop-id="PARADISE_OUT" data-i18n="realtime.stop.paradise">파라다이스호텔</li>
+              <li data-stop-id="HYATT_OUT" data-i18n="realtime.stop.hyatt">인천하얏트호텔</li>
+              <li data-stop-id="MAPO_M" data-i18n="realtime.stop.mapo_m">마포엠갤러리</li>
+              <li data-stop-id="MAPO_GARDEN" data-i18n="realtime.stop.mapo_garden">마포 가든호텔</li>
+              <li data-stop-id="YEONGDEUNGPO" data-i18n="realtime.stop.yeongdeungpo">영등포 신세계</li>
+              <li data-stop-id="GANGNAM" data-i18n="realtime.stop.gangnam">강남 신세계</li>
+              <li data-stop-id="MYEONGDONG" data-i18n="realtime.stop.myeongdong">명동 신세계</li>
+              <li data-stop-id="SEOUL_STATION" data-i18n="realtime.stop.seoul_station">서울역</li>
+              <li data-stop-id="ICN_T1_IN" data-i18n="realtime.stop.icn_t1_in">인천공항 T1 (복귀)</li>
+              <li data-stop-id="PARADISE_IN" data-i18n="realtime.stop.paradise_in">파라다이스호텔 (복귀)</li>
+              <li data-stop-id="HYATT_IN" data-i18n="realtime.stop.hyatt_in">인천하얏트호텔 (복귀)</li>
+            </ul>
+          </div>
+          </div>
+
+          <div class="route-map__panel" data-route-panel="t2-seoul">
+            <header class="route-map__header">
+              <h2 class="route-map__title" data-field="current-route-name-2">인천공항 T2</h2>
+            </header>
+
+            <div class="route-map__body">
+              <div class="route-map__canvas route-map__canvas--narrow">
+                <ul class="route-map__labels">
+                  <li class="route-map__label route-map__label--t2" data-stop-name="인천공항 T1" data-stop-id="ICN_T1_OUT" data-side="right" style="--stop-top: 12%">
+                    인천공항 T1
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="파라다이스 호텔" data-stop-id="PARADISE_OUT" data-side="right" style="--stop-top: 31%">
+                    파라다이스 호텔
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="인천하얏트호텔" data-stop-id="HYATT_OUT" data-side="right" style="--stop-top: 50%">
+                    인천하얏트호텔
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="강남 신세계" data-stop-id="GANGNAM" data-side="right" style="--stop-top: 69%">
+                    강남 신세계
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="명동 신세계" data-stop-id="MYEONGDONG" data-side="right" style="--stop-top: 88%">
+                    명동 신세계
+                  </li>
+                </ul>
+
+                <svg
+                  class="route-map__svg"
+                  width="36"
+                  height="180"
+                  viewBox="0 0 36 516"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <rect x="-1" y="1" width="2" height="478" rx="1" transform="matrix(-1 0 0 1 18 18)" stroke="#EE6916" stroke-width="2"/>
+                  <circle id="stop-ICN_T1_OUT-2" data-stop-id="ICN_T1_OUT" cx="18" cy="62" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                  <g filter="url(#filter0_d_20_205)">
+                    <path d="M10 107L18 115L26 107" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                  </g>
+                  <circle id="stop-PARADISE_OUT-2" data-stop-id="PARADISE_OUT" cx="18" cy="160" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                  <g filter="url(#filter1_d_20_205)">
+                    <path d="M10 205L18 213L26 205" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                  </g>
+                  <circle id="stop-HYATT_OUT-2" data-stop-id="HYATT_OUT" cx="18" cy="258" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                  <g filter="url(#filter2_d_20_205)">
+                    <path d="M10 303L18 311L26 303" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                  </g>
+                  <circle id="stop-GANGNAM-2" data-stop-id="GANGNAM" cx="18" cy="356" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                  <g filter="url(#filter3_d_20_205)">
+                    <path d="M10 401L18 409L26 401" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+                  </g>
+                  <circle id="stop-MYEONGDONG-2" data-stop-id="MYEONGDONG" cx="18" cy="454" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+                  <rect width="36" height="36" rx="18" fill="#00458C"/>
+                  <path d="M23.3167 24.6L21.6667 17.0833L24.875 13.875C26.25 12.5 26.7083 10.6667 26.25 9.75C25.3333 9.29167 23.5 9.75 22.125 11.125L18.9167 14.3333L11.4 12.6833C10.9417 12.5917 10.575 12.775 10.3917 13.1417L10.1167 13.6C9.93333 14.0583 10.025 14.5167 10.3917 14.7917L15.25 18L13.4167 20.75H10.6667L9.75 21.6667L12.5 23.5L14.3333 26.25L15.25 25.3333V22.5833L18 20.75L21.2083 25.6083C21.4833 25.975 21.9417 26.0667 22.4 25.8833L22.8583 25.7C23.225 25.425 23.4083 25.0583 23.3167 24.6Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <rect y="480" width="36" height="36" rx="18" fill="#0054A6"/>
+                  <path d="M23.5 489.75H12.5C11.4874 489.75 10.6666 490.571 10.6666 491.583V502.583C10.6666 503.596 11.4874 504.417 12.5 504.417H23.5C24.5125 504.417 25.3333 503.596 25.3333 502.583V491.583C25.3333 490.571 24.5125 489.75 23.5 489.75Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M10.6666 497.083H25.3333" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M18 489.75V497.083" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M14.3333 504.417L12.5 507.167" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M23.5 507.167L21.6666 504.417" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M14.3334 500.75H14.3434" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M21.6666 500.75H21.6766" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <defs>
+                    <filter id="filter0_d_20_205" x="8" y="105" width="20" height="14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                      <feOffset dy="2"/>
+                      <feComposite in2="hardAlpha" operator="out"/>
+                      <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_20_205"/>
+                      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_20_205" result="shape"/>
+                    </filter>
+                    <filter id="filter1_d_20_205" x="8" y="203" width="20" height="14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                      <feOffset dy="2"/>
+                      <feComposite in2="hardAlpha" operator="out"/>
+                      <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_20_205"/>
+                      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_20_205" result="shape"/>
+                    </filter>
+                    <filter id="filter2_d_20_205" x="8" y="301" width="20" height="14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                      <feOffset dy="2"/>
+                      <feComposite in2="hardAlpha" operator="out"/>
+                      <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_20_205"/>
+                      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_20_205" result="shape"/>
+                    </filter>
+                    <filter id="filter3_d_20_205" x="8" y="399" width="20" height="14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+                      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+                      <feOffset dy="2"/>
+                      <feComposite in2="hardAlpha" operator="out"/>
+                      <feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+                      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_20_205"/>
+                      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_20_205" result="shape"/>
+                    </filter>
+                  </defs>
+                </svg>
+
+                <div class="route-map__bus-wrap route-map__bus-wrap--narrow" data-field="bus-marker-2">
+                  <img class="route-map__bus" src="img/bus-move.svg" alt="" />
+                  <div class="route-map__eta route-map__eta--narrow" data-field="eta-2">
+                    <span data-i18n="realtime.eta">도착예정:</span>
+                    <strong><span data-field="eta-min-2">17</span>분</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="route-map__destination" data-i18n="realtime.destination">서울역</p>
+          </div>
+
+        </section>
+      </main>
+
+    </div>
+  </body>
+</html>

@@ -276,11 +276,12 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   padding: 16px;
   padding-right: 0px;
   border-radius: 4px;
   background: #ffffff;
+  text-decoration: none;
 }
 
 .route-card__content {
@@ -304,10 +305,11 @@ button {
 
 .route-card__btn {
   width: fit-content;
-  padding: 6px 14px;
-  border: 1px solid #c9d3d7;
-  border-radius: 4px;
-  font-size: 14px;
+  padding: 6px 0;
+  border: 0;
+  border-radius: 0;
+  font-size: 16px;
+  font-weight: 700;
   color: #5b6166;
   text-decoration: none;
   margin-top: 12px;
@@ -319,7 +321,7 @@ button {
 }
 
 .info-cards {
-  margin-top: 24px;
+  margin-top: 32px;
   display: grid;
   gap: 16px;
 }
@@ -411,6 +413,466 @@ button {
   padding: 18px 16px 32px;
 }
 
+.realtime-visual {
+  background: linear-gradient(120deg, #d81e37 0%, #ff6d1f 100%);
+  padding: 60px 16px 24px;
+}
+
+.realtime-visual__inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.realtime-visual__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.realtime-visual__back-link {
+  display: inline-flex;
+}
+
+.realtime-visual__back-link img {
+  width: 24px;
+  transform: rotate(180deg);
+}
+
+.realtime-visual__media {
+  width: 110px;
+  flex: 0 0 auto;
+}
+
+.realtime {
+  padding: 18px 16px 32px;
+}
+
+.loop-visual {
+  background: linear-gradient(120deg, #d81e37 0%, #ff6d1f 100%);
+  padding: 60px 16px 24px;
+}
+
+.loop-visual__inner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.loop-visual__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.loop-visual__back-link {
+  display: inline-flex;
+}
+
+.loop-visual__back-link img {
+  width: 24px;
+  transform: rotate(180deg);
+}
+
+.loop-visual__media {
+  width: 110px;
+  flex: 0 0 auto;
+}
+
+.loop {
+  padding: 18px 16px 32px;
+}
+
+.loop-route {
+  margin-top: 0px;
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 20px 16px;
+  color: #222222;
+}
+
+.loop-route__body {
+  display: flex;
+  align-items: stretch;
+  gap: 0px;
+}
+
+.loop-route__map {
+  width: 44px;
+  flex: 0 0 auto;
+  align-self: stretch;
+}
+
+.loop-route__map img {
+  width: auto;
+  height: 100%;
+  display: block;
+}
+
+.loop-route__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  grid-auto-rows: 36px;
+  flex: 1 1 auto;
+}
+
+.loop-route__item {
+  display: flex;
+  align-items: center;
+  gap: 0px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 8px;
+  color: #222222;
+}
+
+.loop-route__time {
+  min-width: 56px;
+  font-weight: 500;
+  color: #222222;
+}
+
+.loop-route__name {
+  font-weight: 500;
+  color: #222222;
+  white-space: nowrap;
+}
+
+.loop-route__item.is-active {
+  background: #ffefe0;
+}
+
+.loop-route__item.is-start .loop-route__time,
+.loop-route__item.is-start .loop-route__name {
+  color: #ee6916;
+  font-weight: 500;
+}
+
+.loop-route__item.is-end {
+  align-items: center;
+  gap: 0px;
+  color: #d81e37;
+  font-weight: 500;
+}
+
+.loop-route__item.is-end .loop-route__time,
+.loop-route__item.is-end .loop-route__name {
+  color: #d81e37;
+  font-weight: 500;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .loop-route__item:hover {
+    background: #ffefe0;
+  }
+}
+
+.loop-route__badge {
+  background: #d81e37;
+  color: #ffffff;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 16px;
+  flex: 0 0 auto;
+}
+
+.loop-route__empty {
+  padding: 12px 0;
+  color: #5b6166;
+  font-size: 14px;
+}
+
+.route-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.route-tab {
+  border: 0;
+  background: #ffffff;
+  padding: 14px 12px;
+  font-size: 15px;
+  font-weight: 400;
+  color: #222222;
+  cursor: pointer;
+}
+
+.route-tab.is-active {
+  background: #222222;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.route-map {
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 20px 16px;
+  color: #222222;
+  overflow: visible;
+}
+
+.route-map__title {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #222222;
+  text-align: center;
+}
+
+.route-map__body {
+  display: grid;
+  gap: 0px;
+  justify-items: center;
+}
+
+.route-map__panel {
+  display: none;
+}
+
+.route-map__panel.is-active {
+  display: block;
+}
+
+.route-map__canvas {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.route-map__canvas--narrow {
+  max-width: 260px;
+}
+
+.route-map__canvas--narrow .route-map__svg {
+  max-width: 126px;
+}
+
+.route-map__svg {
+  width: 100%;
+  max-width: 180px;
+  height: auto;
+  margin: 0 auto;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.route-map__panel[data-route-panel="t2-loop"] .route-map__svg {
+  transform: translateX(1px);
+}
+
+.route-map__labels {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  z-index: 2;
+}
+
+.route-map__label {
+  position: absolute;
+  top: var(--stop-top);
+  font-size: 14px;
+  color: #222222;
+  white-space: normal;
+  max-width: 120px;
+  line-height: 1.3;
+  transform: translateY(-50%);
+  cursor: default;
+}
+
+.route-map__label:focus {
+  outline: 2px solid rgba(238, 105, 22, 0.4);
+  outline-offset: 2px;
+}
+
+.route-map__label[data-side="left"] {
+  right: 75%;
+  text-align: right;
+  padding-right: 10px;
+  transform: translateY(-50%);
+}
+
+.route-map__label[data-side="right"] {
+  left: 75%;
+  text-align: left;
+  padding-left: 10px;
+  transform: translateY(-50%);
+}
+
+.route-map__label--t2[data-side="right"] {
+  left: 55%;
+}
+
+.route-map__bus-wrap {
+  position: absolute;
+  top: 4%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.route-map__bus-wrap--narrow {
+  top: 4%;
+  left: 50%;
+}
+
+.route-map__bus {
+  width: 36px;
+}
+
+.route-map__eta {
+  position: absolute;
+  top: 50%;
+  left: 42px;
+  transform: translateY(-50%);
+  background: #e84c3d;
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 4;
+}
+
+.route-map__eta--narrow {
+  left: 42px;
+}
+
+.route-map__destination {
+  margin: 8px 0 0;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+}
+
+.stop-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+}
+
+.stop-modal.is-hidden {
+  display: none;
+}
+
+.stop-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.stop-modal__dialog {
+  position: relative;
+  z-index: 1;
+  width: min(92vw, 360px);
+  margin: 80px auto 24px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  color: #222222;
+}
+
+.stop-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.stop-modal__title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #222222;
+}
+
+.stop-modal__close {
+  border: 0;
+  background: transparent;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.stop-modal__map img {
+  width: 100%;
+  display: block;
+  border-radius: 10px;
+}
+
+.stop-modal__images {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.stop-modal__images img {
+  width: 100%;
+  display: block;
+  border-radius: 8px;
+}
+
+.stop-modal__action {
+  width: 100%;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid #d4dce0;
+  border-radius: 4px;
+  background: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  color: #222222;
+  cursor: pointer;
+}
+
+.route-map__stops {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: none;
+}
+
+.route-map__status {
+  margin-top: 16px;
+  text-align: center;
+  font-size: 14px;
+  color: #5b6166;
+}
+
+.route-map__status strong {
+  display: block;
+  margin-top: 4px;
+  font-size: 16px;
+  color: #222222;
+}
+
 .faq-list {
   display: grid;
   gap: 16px;
@@ -500,6 +962,14 @@ button {
   }
 
   .qna-visual__media {
+    width: 140px;
+  }
+
+  .realtime-visual__media {
+    width: 140px;
+  }
+
+  .loop-visual__media {
     width: 140px;
   }
 }

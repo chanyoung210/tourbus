@@ -1,0 +1,52 @@
+<svg width="36" height="540" viewBox="0 0 36 540" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="36" height="36" rx="18" fill="#00458C"/>
+<path d="M23.3167 24.6L21.6667 17.0833L24.875 13.875C26.25 12.5 26.7083 10.6667 26.25 9.75C25.3333 9.29167 23.5 9.75 22.125 11.125L18.9167 14.3333L11.4 12.6833C10.9417 12.5917 10.575 12.775 10.3917 13.1417L10.1167 13.6C9.93333 14.0583 10.025 14.5167 10.3917 14.7917L15.25 18L13.4167 20.75H10.6667L9.75 21.6667L12.5 23.5L14.3333 26.25L15.25 25.3333V22.5833L18 20.75L21.2083 25.6083C21.4833 25.975 21.9417 26.0667 22.4 25.8833L22.8583 25.7C23.225 25.425 23.4083 25.0583 23.3167 24.6Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<rect x="16.5" y="36" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="54" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="59" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="72" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="90" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="95" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="108" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="126" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="131" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="144" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="162" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="167" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="180" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="198" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="203" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="216" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="234" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="239" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="252" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="270" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="275" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="288" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="306" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="311" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="324" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="342" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="347" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="360" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="378" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="383" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="396" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="414" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="419" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="432" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="450" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="455" width="3" height="13" fill="#EE6916"/>
+<rect x="16.5" y="468" width="3" height="13" fill="#EE6916"/>
+<circle cx="18" cy="486" r="4.5" fill="white" stroke="#EE6916"/>
+<rect x="16.5" y="491" width="3" height="13" fill="#EE6916"/>
+<g clip-path="url(#clip0_22_296)">
+<path d="M32 518.6C32 527.088 22.3067 535.928 19.0517 538.659C18.7485 538.88 18.3794 539 18 539C17.6206 539 17.2515 538.88 16.9483 538.659C13.6933 535.928 4 527.088 4 518.6C4 514.993 5.475 511.534 8.10051 508.983C10.726 506.433 14.287 505 18 505C21.713 505 25.274 506.433 27.8995 508.983C30.525 511.534 32 514.993 32 518.6Z" fill="#D81E37" stroke="#D81E37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M16.5586 518.428V519.531H14.0098V521.309H17.4277V522.451H9.23438V521.309H12.623V519.531H10.1719V515.078H16.5V516.191H11.5781V518.428H16.5586ZM22.9541 515.361V516.465H21.2159C21.2452 517.314 21.8116 518.223 23.2764 518.594L22.6319 519.707C21.626 519.443 20.9375 518.887 20.5323 518.184C20.1368 518.955 19.4483 519.556 18.4131 519.834L17.7393 518.75C19.1993 518.359 19.7803 517.383 19.8096 516.465H18.0811V515.361H19.8096V514.453H21.2256V515.361H22.9541ZM24.9756 514.473V516.631H26.1377V517.803H24.9756V519.98H23.5694V514.473H24.9756ZM24.9756 520.312V523.447H23.5694V521.426H18.8916V520.312H24.9756Z" fill="white"/>
+</g>
+<defs>
+<clipPath id="clip0_22_296">
+<rect y="504" width="36" height="36" rx="4" fill="white"/>
+</clipPath>
+</defs>
+</svg>
