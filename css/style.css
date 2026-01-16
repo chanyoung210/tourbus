@@ -791,7 +791,7 @@ button {
   position: relative;
   z-index: 1;
   width: min(92vw, 360px);
-  margin: 80px auto 24px;
+  margin: 20px auto 24px;
   background: #ffffff;
   border-radius: 12px;
   padding: 16px;
@@ -808,7 +808,7 @@ button {
 
 .stop-modal__title {
   margin: 0;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
   color: #222222;
 }
