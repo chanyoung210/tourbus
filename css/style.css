@@ -440,6 +440,10 @@ button {
   line-height: 1;
 }
 
+html[lang="ja"] .realtime-visual__back {
+  font-size: 18px;
+}
+
 .realtime-visual__back-link {
   display: inline-flex;
 }
@@ -485,6 +489,10 @@ button {
   font-size: 20px;
   font-weight: 700;
   line-height: 1;
+}
+
+html[lang="ja"] .loop-visual__back {
+  font-size: 18px;
 }
 
 .loop-visual__back-link {
@@ -562,10 +570,13 @@ button {
 .loop-route__name {
   font-weight: 500;
   color: #222222;
-  white-space: nowrap;
+  white-space: normal;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
 }
 
-html[lang="en"] .loop-route__name {
+html[lang="en"] .loop-route__name,
+html[lang="ja"] .loop-route__name {
   font-size: 13px;
 }
 
@@ -1042,7 +1053,8 @@ html[lang="en"] .loop-route__name {
     left: 53%;
   }
 
-  html[lang="en"] .loop-route__name {
+  html[lang="en"] .loop-route__name,
+  html[lang="ja"] .loop-route__name {
     font-size: 14px;
   }
 
