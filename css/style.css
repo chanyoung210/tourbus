@@ -520,7 +520,7 @@ button {
 }
 
 .loop-route__map {
-  width: 44px;
+  width: 36px;
   flex: 0 0 auto;
   align-self: stretch;
 }
@@ -536,7 +536,7 @@ button {
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 0;
+  gap: 0px;
   grid-auto-rows: 36px;
   flex: 1 1 auto;
 }
@@ -553,7 +553,8 @@ button {
 }
 
 .loop-route__time {
-  min-width: 56px;
+  font-size: 13px;
+  min-width: 40px;
   font-weight: 500;
   color: #222222;
 }
@@ -562,6 +563,10 @@ button {
   font-weight: 500;
   color: #222222;
   white-space: nowrap;
+}
+
+html[lang="en"] .loop-route__name {
+  font-size: 13px;
 }
 
 .loop-route__item.is-active {
@@ -666,7 +671,7 @@ button {
 .route-map__canvas {
   position: relative;
   width: 100%;
-  max-width: 320px;
+  max-width: 100%;
   margin: 0 auto;
   padding: 0 16px;
   box-sizing: border-box;
@@ -694,7 +699,7 @@ button {
 }
 
 .route-map__panel[data-route-panel="t2-loop"] .route-map__svg {
-  transform: translateX(1px);
+  transform: translateX(0px);
 }
 
 .route-map__labels {
@@ -724,14 +729,14 @@ button {
 }
 
 .route-map__label[data-side="left"] {
-  right: 75%;
+  right: 72%;
   text-align: right;
   padding-right: 10px;
   transform: translateY(-50%);
 }
 
 .route-map__label[data-side="right"] {
-  left: 75%;
+  left: 72%;
   text-align: left;
   padding-left: 10px;
   transform: translateY(-50%);
@@ -743,7 +748,7 @@ button {
 
 .route-map__bus-wrap {
   position: absolute;
-  top: 4%;
+  top: 2.9%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 3;
@@ -1020,6 +1025,46 @@ button {
 
   .route-map__labels{
     width:100%;
+  }
+  .route-map__canvas {
+    max-width: 90%;
+  }
+
+  .route-map__label[data-side="left"] {
+    right: 63%;
+  }
+  
+  .route-map__label[data-side="right"] {
+    left: 63%;
+  }
+  
+  .route-map__label--t2[data-side="right"] {
+    left: 53%;
+  }
+
+  html[lang="en"] .loop-route__name {
+    font-size: 14px;
+  }
+
+  .route-tab {
+    font-size: 16px;
+  }
+
+  .route-map__title {
+    font-size: 16px;
+  }
+
+  .route-map__label {
+    font-size: 16px;
+  }
+
+  .route-map__destination {
+    font-size: 16px;
+  }
+
+  .route-map__eta {
+    font-size: 16px;
+    padding: 8px 12px;
   }
 }
 
