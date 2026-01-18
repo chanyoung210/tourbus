@@ -96,7 +96,7 @@ button {
 
 .visual__sub {
   margin: 0;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 400;
   opacity: 0.9;
 }
@@ -1092,6 +1092,12 @@ html[lang="ja"] .loop-route__name {
 
   .visual {
     padding: 64px 24px 34px;
+  }
+  .visual__title{
+    font-size: 36px;
+  }
+  .visual__sub {
+    font-size: 22px;
   }
 
   /*.visual__title {

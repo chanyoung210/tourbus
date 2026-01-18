@@ -86,7 +86,7 @@ $(function () {
       "main.route1.sub": "Departure: 9:00",
       "main.route1.view": "View Route",
       "main.route2.title": "Trip 2<br />Airport → Downtown",
-      "main.route2.sub": "Departure: 16:30",
+      "main.route2.sub": "Departure: 16:00",
       "main.route2.view": "View Route"
     },
     zh: {
@@ -105,7 +105,7 @@ $(function () {
       "main.guide.item7": "建议提前截图保存电子票，以防现场网络不稳定。",
       "main.qna.button": "常见问题",
       "contact.title": "咨询与合作申请",
-      "loop.visual.title": "咨询与合作申请",
+      "loop.visual.title": "路线图及时间表",
       "loop.tab1": "第1班次： 仁川机场T2 → 首尔站（往返）",
       "loop.tab2": "第2班次： 仁川机场T2 → 麻浦站（单程）",
       "loop.stop.icn_t2_departure": "仁川机场第2航站楼（出发）",
@@ -140,6 +140,7 @@ $(function () {
       "realtime.eta.unit": " 分钟",
       "realtime.stop.paradise_in": "仁川天堂城酒店",
       "realtime.stop.hyatt_in": "仁川君悦酒店",
+      "realtime.stop.icn_t1_in": "仁川机场第1航站楼",
       "qna.visual.title": "常见问题",
       "qna.q1.q": "预约后会立刻确认吗？",
       "qna.q1.a": "A. 若有剩余座位，将立即显示为 CONFIRMED（已确认）；若座位已满，则进入 WAITLIST（候补）。",
@@ -170,7 +171,7 @@ $(function () {
       "main.route1.sub": "出发时间：9:00",
       "main.route1.view": "查看路线",
       "main.route2.title": "第2班次<br />机场 → 市区",
-      "main.route2.sub": "出发时间：16:30",
+      "main.route2.sub": "出发时间：16:00",
       "main.route2.view": "查看路线"
     },
     ja: {
@@ -182,7 +183,7 @@ $(function () {
       "main.route1.sub": "出発：9:00",
       "main.route1.view": "ルートを見る",
       "main.route2.title": "2便<br />空港 → 市内",
-      "main.route2.sub": "出発：16:30",
+      "main.route2.sub": "出発：16:00",
       "main.route2.view": "ルートを見る",
       "main.how.title": "利用方法",
       "main.how.item1": "公式サイトの 「予約」 ボタンから申し込みます。",
