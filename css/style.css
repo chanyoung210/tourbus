@@ -1005,6 +1005,7 @@ html[lang="ja"] .loop-route__name {
   .qna {
     max-width: 800px;
     margin: 0 auto;
+    padding: 18px 0px 32px;
   }
 
   .main-actions {
