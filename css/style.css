@@ -982,6 +982,9 @@ html[lang="ja"] .loop-route__name {
   .visual__title{
     font-size: 32px;
   }
+  .visual__sub {
+    font-size: 18px;
+  }
 
   .visual {
     padding: 64px 24px 34px;
