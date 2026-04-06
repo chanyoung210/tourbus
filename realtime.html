@@ -1,0 +1,1563 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>실시간 위치</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/network.js"></script>
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script src="js/timetable.js"></script>
+    <script src="js/stops.js"></script>
+    <script defer src="js/i18n.js"></script>
+    <script defer src="js/main.js"></script>
+    <script>
+
+    /* ===============================
+		   TEST CASES
+		================================= */
+		const TEST_MODE = false;
+		const TEST_CASE = 8;
+		
+		const TEST_DATA = {
+		  1: { time: [15, 5],  lat: 37.4658,   lng: 126.4350 },
+		  2: { time: [15, 18], lat: 37.4498,   lng: 126.4470 },
+		  3: { time: [15, 27], lat: 37.4389,   lng: 126.4562 },
+		  4: { time: [15, 32], lat: 37.4425,   lng: 126.4620 },
+		  5: { time: [12, 18], lat: 37.5549,   lng: 126.9708 },
+		  6: { time: [12, 40], lat: 37.5533,   lng: 126.9689 },
+		  7: { time: [13, 45], lat: 37.5633,   lng: 126.8859 },
+		  8: { time: [14, 30], lat: 37.456720, lng: 126.417517 },
+		  9: { time: [16, 20], lat: 37.51928,  lng: 126.913192 },
+		  10:{ time: [10, 57], lat: 37.517968, lng: 126.910969 },
+		  11:{ time: [13, 36], lat: 37.540425, lng: 126.939732 },
+		  12:{ time: [15, 16], lat: 37.448022, lng: 126.450956 },
+		  13:{ time: [15, 21], lat: 37.436156, lng: 126.460171 }
+		};
+     
+    
+    /* ===============================
+		   ETA / Segment 안정화 캐시
+		================================= */
+		const __etaState = { routes: new Map() };
+		const __segState = { routes: new Map() };
+		
+		// 마지막 버스 데이터 저장용
+		let __lastBusRaw = null;
+		
+		// 중복 호출 방지용
+		let __isFetching = false;
+		
+		// 운행 종료 후 "도착 완료" 유지 시간 (분)
+		const ARRIVAL_GRACE_MIN = 5;
+		
+		
+		/* ===============================
+		   LOOP 노선용 ratio
+		================================= */
+		const LOOP_PATH_RATIO = {
+		  ICN_T2: 0.000,
+		  ICN_T1_OUT: 0.084,
+		  PARADISE_OUT: 0.125,
+		  HYATT_OUT: 0.175,
+		  MAPO_M: 0.225,
+		  MAPO_GARDEN: 0.275,
+		  YEONGDEUNGPO: 0.325,
+		  GANGNAM: 0.375,
+		  MYEONGDONG: 0.424,
+		  SEOUL_STATION_GO: 0.500,
+		  SEOUL_STATION_BACK: 0.505,
+		  ICN_T1_IN: 0.925
+		};
+		
+		
+		/* ===============================
+		   DOM 접근 중복 제거 헬퍼
+		   - 패널/마커/ETA를 route별로 안전하게 가져옴
+		   - 기존 코드에서 querySelector 반복 제거
+		================================= */
+		function getPanel(route) {
+		  return document.querySelector(`.route-map__panel[data-route-panel="${route}"]`);
+		}
+		
+		function getMarker(panel, route) {
+		  if (!panel) return null;
+		  return route === "t2-seoul"
+		    ? panel.querySelector("[data-field='bus-marker-2']")
+		    : panel.querySelector("[data-field='bus-marker']");
+		}
+		
+		function getEtaEls(panel, route) {
+		  if (!panel) return [];
+		  return route === "t2-seoul"
+		    ? panel.querySelectorAll("[data-field^='eta-']")
+		    : panel.querySelectorAll("[data-field^='eta']");
+		}
+		
+		
+		/* ===============================
+		   시간 유틸
+		================================= */
+		function getNow() {
+		  if (TEST_MODE) {
+		    const t = TEST_DATA[TEST_CASE].time;
+		    return new Date(2026, 1, 19, t[0], t[1]);
+		  }
+		  return new Date();
+		}
+		
+		function nowMinute() {
+		  const n = getNow();
+		  return n.getHours() * 60 + n.getMinutes();
+		}
+		
+		function parseHHMM(timeStr) {
+		  const [h, m] = timeStr.split(":").map(Number);
+		  return h * 60 + m;
+		}
+
+		
+    /* ===============================
+		   버스 위치 API
+		================================= */
+		async function fetchBusLocation() {
+		  if (TEST_MODE) {
+		    const d = TEST_DATA[TEST_CASE];
+		    return { BI_Y_POSITION: d.lat, BI_X_POSITION: d.lng };
+		  }
+		
+		  try {
+		    return await window.NETWORK.post("/api/trs/realBusXy.do", {});
+		  } catch (e) {
+		    console.error("버스 위치 조회 실패", e);
+		    return null;
+		  }
+		}
+		
+		
+		/* ===============================
+		   버스 좌표 정규화 + lat/lng swap 보정
+		================================= */
+	  function normalizeBus(busRaw) {
+	    const y = Number(busRaw.BI_Y_POSITION);
+	    const x = Number(busRaw.BI_X_POSITION);
+	
+	    // 기본 가정: Y=lat, X=lng
+	    let lat = y;
+	    let lng = x;
+	
+	    // 위도는 보통 33~39, 경도는 124~132 근처(한국)
+	    // lat이 120대면 경도일 확률 높으니 swap
+	    const looksSwapped =
+	      (lat > 90 || lat < -90) ||
+	      (Math.abs(lat) > 70) ||
+	      (lat > 100 && lat < 140) ||      // 120~130대가 들어오면 거의 lng
+	      (lng > -90 && lng < 90 && lat > 100); // lng가 30~40대인데 lat가 120대 같은 경우
+	
+	    if (looksSwapped) {
+	      lat = x;
+	      lng = y;
+	      console.warn("⚠️ Bus lat/lng swapped detected. Auto-corrected:", { lat, lng });
+	    }
+	
+	    return { lat, lng };
+	  }
+		
+		
+		/* ===============================
+		   stopId 기반 좌표
+		================================= */
+		function getStopCoord(stopId) {
+		  const coord = window.STOP_COORDS?.[stopId];
+		  if (!coord) return null;
+		  return { lat: Number(coord.lat), lng: Number(coord.lng) };
+		}
+		
+		
+		/* ===============================
+		   공백 시간(idle) 판별
+		================================= */
+		function getIdleInfo(route) {
+		  const routeInfo = window.TIMETABLE.routes.find(r => r.id === route);
+		  if (!routeInfo) return null;
+		
+		  const schedule = routeInfo.schedule;
+		  const nowMin = nowMinute();
+		
+		  for (let i = 0; i < schedule.length - 1; i++) {
+		    const cur = schedule[i];
+		    const next = schedule[i + 1];
+		
+		    if (cur.stopId === next.stopId) {
+		      let curMin = parseHHMM(cur.time);
+		      let nextMin = parseHHMM(next.time);
+		      if (nextMin < curMin) nextMin += 1440;
+		
+		      if (nowMin > curMin && nowMin < nextMin) {
+		        return { stopId: cur.stopId, start: curMin, end: nextMin };
+		      }
+		    }
+		  }
+		
+		  return null;
+		}
+		
+		
+		/* ===============================
+		   현재 운행 노선 판단
+		================================= */
+		function getOperatingRoute() {
+		  const now = getNow();
+		  const nowMin = now.getHours() * 60 + now.getMinutes();
+		
+		  const routes = window.TIMETABLE.routes;
+		
+		  for (const r of routes) {
+		    const startMin = parseHHMM(r.timeRange.start);
+		    const endMin   = parseHHMM(r.timeRange.end);
+		
+		    if (nowMin >= startMin && nowMin < endMin) return r.id;
+		  }
+		
+		  return null;
+		}
+		
+		
+		/* ===============================
+		   종료 직후 판단
+		================================= */
+		function getRecentlyEndedRoute() {
+		  const nowMin = nowMinute();
+		
+		  for (const r of window.TIMETABLE.routes) {
+		    const endMin = parseHHMM(r.timeRange.end);
+		
+		    if (nowMin >= endMin && nowMin < endMin + ARRIVAL_GRACE_MIN) {
+		      return r.id;
+		    }
+		  }
+		  return null;
+		}
+		
+		
+		/* ===============================
+		   대기 렌더
+		================================= */
+		function renderWaiting(el) {
+		  const lang = window.getCurrentLang ? window.getCurrentLang() : "ko";
+		  el.innerHTML = `<strong data-i18n="realtime.status.waiting">운행 대기 중</strong>`;
+		  window.applyTranslations?.(lang);
+		
+		  el.classList.remove("eta-left");
+		  el.classList.add("eta-right");
+		}
+
+
+		/* ===============================
+		   모든 노선 대기 상태
+		================================= */
+		function showWaitingStateAll() {
+		  document.querySelectorAll(".route-map__panel").forEach((panel) => {
+		    const route = panel.dataset.routePanel;
+		
+		    getEtaEls(panel, route).forEach(renderWaiting);
+		
+		    const marker = getMarker(panel, route);
+		    if (!marker) return;
+		
+		    if (route === "t2-loop") {
+		      const idleInfo = getIdleInfo(route);
+		
+		      const ratio = idleInfo
+		        ? getLoopRatio(idleInfo.stopId, route)
+		        : LOOP_PATH_RATIO.ICN_T2;
+		
+		      requestAnimationFrame(() => moveBusAlongPath(route, ratio));
+		      panel.classList.add("is-waiting");
+		    } else {
+		      marker.style.top = "0%";
+		      marker.style.setProperty("--bus-offset-y", "0px");
+		    }
+		  });
+		}
+
+
+		/* ===============================
+		   도착완료 표시
+		================================= */
+		function showArrivedState(route) {
+		  document.querySelectorAll(".route-tab").forEach(t => t.classList.remove("is-active"));
+		  document.querySelectorAll(".route-map__panel").forEach(p => p.classList.remove("is-active"));
+		
+		  document.querySelector(`.route-tab[data-route="${route}"]`)?.classList.add("is-active");
+		
+		  const panel = getPanel(route);
+		  if (!panel) return;
+		
+		  panel.classList.add("is-active");
+		
+		  getEtaEls(panel, route).forEach(el => {
+		    el.innerHTML = "<strong>도착 완료</strong>";
+		  });
+		
+		  if (route === "t2-loop") {
+		    moveBusAlongPath(route, LOOP_PATH_RATIO.SEOUL_STATION_GO);
+		  } else {
+		    const marker = getMarker(panel, route);
+		    if (marker) marker.style.top = "100%";
+		  }
+		}
+
+		
+		/* ===============================
+		   LOOP direction/ratio
+		================================= */
+		function getLoopDirection(route) {
+		  if (route !== "t2-loop") return "forward";
+		
+		  const routeInfo = window.TIMETABLE.routes.find(r => r.id === route);
+		  if (!routeInfo) return "forward";
+		
+		  const schedule = routeInfo.schedule;
+		
+		  const seoulTimes = schedule
+		    .map((s, i) => ({ ...s, index: i }))
+		    .filter(s => s.stopId === "SEOUL_STATION");
+		
+		  if (seoulTimes.length < 2) return "forward";
+		
+		  const secondSeoul = seoulTimes[1];
+		  const returnStart = parseHHMM(secondSeoul.time);
+		
+		  const nowMin = nowMinute();
+		  return nowMin >= returnStart ? "return" : "forward";
+		}
+		
+		
+		function getLoopRatio(stopId, route) {
+		  if (stopId !== "SEOUL_STATION") return LOOP_PATH_RATIO[stopId];
+		
+		  const direction = getLoopDirection(route);
+		
+		  return direction === "return"
+		    ? LOOP_PATH_RATIO.SEOUL_STATION_BACK
+		    : LOOP_PATH_RATIO.SEOUL_STATION_GO;
+		}
+
+
+		/* ===============================
+		   moveBusAlongPath
+		================================= */
+		function moveBusAlongPath(route, ratio) {
+		  const panel = getPanel(route);
+		  if (!panel) return;
+		
+		  const marker = getMarker(panel, route);
+		  if (!marker) return;
+		
+		  const svgEl = panel.querySelector("svg.route-map__svg");
+		  if (!svgEl) return;
+		
+		  const path = svgEl.querySelector("#loop-path");
+		  if (!path) return;
+		
+		  const pathLength = path.getTotalLength();
+		  const safeRatio = Math.max(0, Math.min(1, ratio));
+		  const point = path.getPointAtLength(pathLength * safeRatio);
+		
+		  const viewBox = svgEl.viewBox.baseVal;
+		
+		  const svgRect = svgEl.getBoundingClientRect();
+		  const canvasRect = panel.querySelector(".route-map__canvas").getBoundingClientRect();
+		
+		  const scaleX = svgRect.width / viewBox.width;
+		  const scaleY = svgRect.height / viewBox.height;
+		
+		  const svgX = (point.x - viewBox.x) * scaleX;
+		  const svgY = (point.y - viewBox.y) * scaleY;
+		
+		  const canvas = panel.querySelector(".route-map__canvas");
+		  const canvasStyle = window.getComputedStyle(canvas);
+		  const paddingLeft = parseFloat(canvasStyle.paddingLeft) || 0;
+		  const paddingTop  = parseFloat(canvasStyle.paddingTop) || 0;
+		
+			const screenX = svgRect.left + svgX;
+			const screenY = svgRect.top  + svgY;
+			const finalX = screenX - canvasRect.left;
+			const finalY = screenY - canvasRect.top;
+		
+			// 마커 transform 제거
+			marker.style.transform = "none";
+			
+			// 버스 아이콘 중심을 path 점에 맞추기 (아이콘의 wrap 내부 오프셋까지 반영)
+			const busIcon = marker.querySelector(".route-map__bus");
+			if (!busIcon) return;
+			
+			// wrap(마커) 내부에서 아이콘이 시작하는 위치(픽셀)
+			const markerRect = marker.getBoundingClientRect();
+			const busRect = busIcon.getBoundingClientRect();
+			
+			const iconOffsetX = busRect.left - markerRect.left;
+			const iconOffsetY = busRect.top  - markerRect.top;
+			
+			// 최종: (path point) - (아이콘 오프셋) - (아이콘 절반)
+			marker.style.left = `${finalX - iconOffsetX - busRect.width / 2}px`;
+			marker.style.top  = `${finalY - iconOffsetY - busRect.height / 2}px`;
+		
+		  // ETA 좌우 반전
+		  if (route === "t2-loop") {
+		    const etaEl = marker.querySelector(".route-map__eta");
+		    if (etaEl) {
+		      if (safeRatio <= 0.5) {
+		        etaEl.classList.add("eta-left");
+		        etaEl.classList.remove("eta-right");
+		      } else {
+		        etaEl.classList.add("eta-right");
+		        etaEl.classList.remove("eta-left");
+		      }
+		    }
+		  }
+		}
+
+		
+		// 정류장 근접 시 스냅 처리
+		function snapToStopIfNear(bus, seg, route) {
+		  const THRESHOLD_M = 120;
+		
+		  const latScale = 111320;
+		  const lngScale = 111320 * Math.cos(bus.lat * Math.PI / 180);
+		
+		  function distanceTo(stopId) {
+		    const stop = getStopCoord(stopId);
+		    if (!stop) return Infinity;
+		
+		    const dx = (bus.lat - stop.lat) * latScale;
+		    const dy = (bus.lng - stop.lng) * lngScale;
+		    return Math.sqrt(dx * dx + dy * dy);
+		  }
+		
+		  const toId = seg.to.id;
+		
+		  // ICN_T1 IN/OUT 특수 처리
+		  if (toId === "ICN_T1_OUT" || toId === "ICN_T1_IN") {
+		    const dIn  = distanceTo("ICN_T1_IN");
+		    const dOut = distanceTo("ICN_T1_OUT");
+		
+		    if (Math.min(dIn, dOut) < THRESHOLD_M) {
+		      return dIn < dOut
+		        ? LOOP_PATH_RATIO.ICN_T1_IN
+		        : LOOP_PATH_RATIO.ICN_T1_OUT;
+		    }
+		    return null;
+		  }
+		
+		  // 일반 정류장: seg.to 만 허용
+		  const distTo = distanceTo(toId);
+		
+		  if (distTo < THRESHOLD_M) {
+		    return getLoopRatio(toId, route);
+		  }
+		
+		  return null;
+		}
+
+		
+		// ETA 계산 (다음 정류장까지)
+		function calcNextStopEtaStable(seg, route, bus) {
+		  const routeInfo = window.TIMETABLE.routes.find(r => r.id === route);
+		  if (!routeInfo) return null;
+		
+		  const schedule = routeInfo.schedule;
+		
+		  // from/to 시간 찾기 (중복 stopId가 있으면 "현재 세그에 맞는 쌍"을 찾아야 함)
+		  // => 안전하게: schedule에서 from 이후에 등장하는 첫 to를 사용
+		  const fromIdx = schedule.findIndex(s => s.stopId === seg.from.id);
+		  if (fromIdx < 0) return null;
+		
+		  let toIdx = -1;
+		  for (let i = fromIdx + 1; i < schedule.length; i++) {
+		    if (schedule[i].stopId === seg.to.id) { toIdx = i; break; }
+		  }
+		  if (toIdx < 0) {
+		    // fallback
+		    const toFallback = schedule.find(s => s.stopId === seg.to.id);
+		    if (!toFallback) return null;
+		  }
+		
+		  const fromS = schedule[fromIdx];
+		  const toS   = schedule[toIdx];
+		
+		  const fromMin0 = parseHHMM(fromS.time);
+		  let toMin0     = parseHHMM(toS.time);
+		
+		  // 자정 처리
+		  let fromMin = fromMin0;
+		  let toMin   = toMin0;
+		  if (toMin < fromMin) toMin += 1440;
+		
+		  const nowMin0 = nowMinute();
+		  let nowMin = nowMin0;
+		  // now가 자정 넘어 toMin 범위에 걸릴 수 있으니 맞춤
+		  if (nowMin < fromMin - 60) nowMin += 1440;
+		
+		  // -----------------------------
+		  // A) 시간표 기반 ETA (진행률 반영)
+		  // -----------------------------
+		  let segDuration = toMin - fromMin;
+		  if (segDuration <= 0) segDuration = 1;
+		
+		  // progress 기반 남은 시간
+		  const etaByProgress = segDuration * (1 - seg.ratio);
+		
+		  // scheduleRemaining(절대시간 기반 남은 시간)
+		  const scheduleRemainingRaw = toMin - nowMin;
+		
+		  // scheduleRemaining이 음수(지연)면 0으로 두고, progress ETA가 너무 낙관적이면 살짝만 올림
+		  const scheduleRemaining = Math.max(0, scheduleRemainingRaw);
+		
+		  // -----------------------------
+		  // B) 거리 기반 ETA
+		  // -----------------------------
+		  const stopCoord = getStopCoord(seg.to.id);
+		  let etaByDistance = null;
+		  let distToStopM = null;
+		
+		  if (stopCoord) {
+		    distToStopM = distanceMeter(bus, stopCoord);
+		
+		    // 평균 속도: 공항/외곽은 좀 빠르고 도심은 느림 (정류장별 간단 가중)
+		    const fastStops = new Set(["ICN_T2", "ICN_T1_OUT", "PARADISE_OUT", "HYATT_OUT"]);
+		    const slowStops = new Set(["MYEONGDONG", "SEOUL_STATION"]);
+		
+		    let avgKmPerMin = 0.40; // 기본 24km/h
+		    if (fastStops.has(seg.from.id) || fastStops.has(seg.to.id)) avgKmPerMin = 0.55; // 33km/h
+		    if (slowStops.has(seg.to.id)) avgKmPerMin = 0.33; // 20km/h
+		
+		    etaByDistance = (distToStopM / 1000) / avgKmPerMin;
+		  }
+		
+		  // -----------------------------
+		  // C) 최종 ETA 결합 (가중 평균)
+		  // - 공항 구간/초반은 시간표 신뢰 ↑
+		  // - 도심/중후반은 거리 신뢰 ↑
+		  // -----------------------------
+		  let wSchedule = 0.65;
+		  let wDistance = 0.35;
+		
+		  // 진행률이 높아질수록 거리 신뢰도 ↑ (정류장 근처 튐 방지)
+		  if (seg.ratio >= 0.6) { wSchedule = 0.55; wDistance = 0.45; }
+		  if (seg.ratio >= 0.8) { wSchedule = 0.45; wDistance = 0.55; }
+		
+		  // 거리 정보가 없으면 시간표만
+		  let eta = etaByProgress;
+		  if (etaByDistance != null) {
+		    eta = etaByProgress * wSchedule + etaByDistance * wDistance;
+		  }
+		
+		  // scheduleRemaining이 eta보다 훨씬 작으면(시간표상 거의 도착) 완전 0으로 떨어지지 않게 완화
+		  // (도착 0은 distance near 보정에서만 내리게)
+		  eta = Math.max(eta, Math.min(3, scheduleRemaining));
+		
+		  // 상한: 너무 크게 튀는 값 제한
+		  eta = Math.min(eta, scheduleRemaining + 12);
+		
+		  // 근접 보정(스냅): 근접하면 0~2로 부드럽게
+		  if (distToStopM != null) {
+		    if (distToStopM <= 40) eta = 0;
+		    else if (distToStopM <= 100) eta = Math.min(eta, 2);
+		    else if (distToStopM <= 200) eta = Math.min(eta, 3);
+		  }
+		
+		  // -----------------------------
+		  // D) 스무딩(급락/급등 방지)
+		  // -----------------------------
+		  const state = __etaState.routes.get(route) || {
+		    lastEta: null,
+		    lastToId: null,
+		    lastUpdateMin: null
+		  };
+		
+		  const curToId = seg.to.id;
+		  const curMin = nowMin0;
+		
+		  // 같은 목적지(toId)일 때만 강하게 스무딩
+		  if (state.lastEta != null && state.lastToId === curToId) {
+		
+		    // 시간 경과(분)
+		    const dt = state.lastUpdateMin != null ? Math.max(1, curMin - state.lastUpdateMin) : 1;
+		
+		    // 급락 제한: 분당 최대 2분만 떨어지게
+		    const minEta = state.lastEta - 2.0 * dt;
+		
+		    // 급등 제한: 분당 최대 4분만 올라가게
+		    const maxEta = state.lastEta + 4.0 * dt;
+		
+		    eta = Math.max(minEta, Math.min(maxEta, eta));
+		
+		    // EMA(지수평활)
+		    const alpha = 0.35; // 0.2~0.4 추천
+		    eta = state.lastEta * (1 - alpha) + eta * alpha;
+		  }
+		
+		  __etaState.routes.set(route, {
+		    lastEta: eta,
+		    lastToId: curToId,
+		    lastUpdateMin: curMin
+		  });
+		
+		  return Math.max(0, Math.round(eta));
+		}
+
+
+		// ===============================
+		// 상태 히스테리시스
+		// - once ON 되면 약간 완화된 조건으로 유지
+		// ===============================
+		const __arrivalLatch = new Map(); // key: route+"|"+toId -> { soonOn, arrivedOn }
+		
+		function getLatchKey(route, toId) {
+		  return `${route}|${toId}`;
+		}
+		
+		// 곧 도착
+		function isArrivingSoonStable(route, seg, etaMin, distToStopM) {
+		  const key = getLatchKey(route, seg.to.id);
+		  const latch = __arrivalLatch.get(key) || { soonOn: false, arrivedOn: false };
+		
+		  // ON 조건(더 엄격)
+		  const turnOn =
+		    (distToStopM <= 220 && seg.ratio >= 0.65) ||
+		    (distToStopM <= 140 && etaMin <= 2);
+		
+		  // OFF 조건(더 완화) : 한번 켜지면 조금 멀어져도 유지
+		  const turnOff =
+		    distToStopM > 320 && etaMin > 3 && seg.ratio < 0.55;
+		
+		  if (!latch.soonOn && turnOn) latch.soonOn = true;
+		  else if (latch.soonOn && turnOff) latch.soonOn = false;
+		
+		  __arrivalLatch.set(key, latch);
+		  return latch.soonOn;
+		}
+		
+		// 도착 완료
+		function isArrivedStable(route, seg, etaMin, distToStopM) {
+		  const key = getLatchKey(route, seg.to.id);
+		  const latch = __arrivalLatch.get(key) || { soonOn: false, arrivedOn: false };
+		
+		  // ON(엄격)
+		  const turnOn =
+		    distToStopM <= 60 &&
+		    (seg.ratio >= 0.9 || etaMin <= 1);
+		
+		  // OFF(완화): 도착 완료는 거의 풀지 않음(조금 벗어나도 유지)
+		  const turnOff =
+		    distToStopM > 110 && etaMin > 2 && seg.ratio < 0.75;
+		
+		  if (!latch.arrivedOn && turnOn) latch.arrivedOn = true;
+		  else if (latch.arrivedOn && turnOff) latch.arrivedOn = false;
+		
+		  __arrivalLatch.set(key, latch);
+		  return latch.arrivedOn;
+		}
+
+		
+		/* ============================================================
+		   SEGMENT 선택 로직 (공항 강제 + 이후 구간 완화형)
+		============================================================ */
+		function findSegmentByProjection(bus, stops, route) {
+		
+			  const routeInfo = window.TIMETABLE.routes.find(r => r.id === route);
+			  const schedule = routeInfo?.schedule || [];
+			
+			  const now = getNow();
+			  const nowMin = now.getHours() * 60 + now.getMinutes();
+			
+			  const candidates = [];
+				
+			  /* ============================================================
+			     1️. 공항 구간 (시간 + 거리 동시 만족)
+			  ============================================================ */
+				
+				const direction = getLoopDirection(route);  
+				
+				if ( (route === "t2-loop" && direction === "forward") || route === "t2-seoul") {
+				
+				  const AIRPORT_STRONG = [
+				    ["ICN_T2", "ICN_T1_OUT"],
+				    ["ICN_T1_OUT", "PARADISE_OUT"],
+				    ["PARADISE_OUT", "HYATT_OUT"]
+				  ];
+				
+				  for (const [fromId, toId] of AIRPORT_STRONG) {
+				
+				    const fromS = schedule.find(s => s.stopId === fromId);
+				    const toS   = schedule.find(s => s.stopId === toId);
+				    if (!fromS || !toS) continue;
+				
+				    const fromMin = parseHHMM(fromS.time);
+				    const toMin   = parseHHMM(toS.time);
+				
+				    if (nowMin >= fromMin && nowMin < toMin) {
+				
+				      const a = stops.find(s => s.id === fromId);
+				      const b = stops.find(s => s.id === toId);
+				      if (!a || !b) continue;
+				
+				      // 위치 기반 ratio 계산
+				      const proj = projectPoint(bus, a, b);
+				
+				      return {
+				        from: a,
+				        to: b,
+				        ratio: proj ? Math.max(0, Math.min(1, proj.ratio)) : 0,
+				        index: stops.findIndex(s => s.id === a.id),
+				        score: 0
+				      };
+				    }
+				  }
+				}
+				
+				if (route === "t2-loop" && direction === "return") {
+					
+				  // 시간 기반 index 우선
+				  const timeIndex = estimateIndexByTime(schedule, stops, nowMin);
+				
+				  const a = stops[timeIndex];
+				  const b = stops[timeIndex + 1];
+				
+				  if (a && b) {
+				    const proj = projectPoint(bus, a, b);
+				
+				    return {
+				      from: a,
+				      to: b,
+				      ratio: proj ? proj.ratio : 0,
+				      index: timeIndex,
+				      score: 0
+				    };
+				  }
+				} 
+	
+	
+			  /* ============================================================
+			     2️. 일반 구간 (거리 기반 + 미래 필터)
+			  ============================================================ */
+			
+			  for (let i = 0; i < stops.length - 1; i++) {
+			
+			    const a = stops[i];
+			    const b = stops[i + 1];
+			
+			    const proj = projectPoint(bus, a, b);
+			    if (!proj) continue;
+			
+			    if (proj.dist > 2500) continue;
+			
+			    const segTime = estimateSegTime(schedule, a.id, b.id, proj.ratio);
+			
+			    if (segTime != null) {
+			      const diff = segTime - nowMin;
+			      if (diff > 40) continue;   // 40분 이상 미래면 제외
+			    }
+			
+			    candidates.push({
+			      from: a,
+			      to: b,
+			      ratio: proj.ratio,
+			      index: i,
+			      score: proj.dist,
+			      priority: 1
+			    });
+			  }
+			
+			  /* ============================================================
+			     3️. 복귀 막바지 보정 (T1 vs T2)
+			  ============================================================ */
+			  if (route === "t2-loop" && direction === "return") {
+			
+			    const t1 = getStopCoord("ICN_T1_IN");
+			    const t2 = getStopCoord("ICN_T2");
+			
+			    if (t1 && t2) {
+			
+			      const distToT1 = distanceMeter(bus, t1);
+			      const distToT2 = distanceMeter(bus, t2);
+			
+			      if (distToT2 < distToT1) {
+			
+			        const a = stops.find(s => s.id === "ICN_T1_IN");
+			        const b = stops.find(s => s.id === "ICN_T2");
+			
+			        if (a && b) {
+			
+			          const proj = projectPoint(bus, a, b);
+			
+			          if (proj) {
+			            candidates.push({
+			              from: a,
+			              to: b,
+			              ratio: proj.ratio,
+			              index: stops.findIndex(s => s.id === a.id),
+			              score: 0,
+			              priority: 4   // 최고 우선순위
+			            });
+			          }
+			        }
+			      }
+			    }
+			  }
+			
+			  /* ============================================================
+			     최종 선택
+			  ============================================================ */
+			
+			  if (!candidates.length) {
+				
+				  // -----------------------------
+				  // 🔥 시간 기반 fallback 세그
+				  // -----------------------------
+				  const timeIndex = estimateIndexByTime(schedule, stops, nowMin);
+				
+				  const a = stops[timeIndex];
+				  const b = stops[timeIndex + 1];
+				
+				  if (a && b) {
+				
+				    const proj = projectPoint(bus, a, b);
+				
+				    return {
+				      from: a,
+				      to: b,
+				      ratio: proj ? proj.ratio : 0,
+				      index: timeIndex,
+				      score: 9999
+				    };
+				  }
+				
+				  return null;
+				}
+			
+			  // 우선순위 → 거리 순 정렬
+			  candidates.sort((a, b) => {
+			    if (b.priority !== a.priority) {
+			      return b.priority - a.priority;
+			    }
+			    return a.score - b.score;
+			  });
+			
+			  const best = candidates[0];
+			
+			  return {
+			    from: best.from,
+			    to: best.to,
+			    ratio: Math.max(0, Math.min(1, best.ratio)),
+			    index: best.index,
+			    score: best.score
+			  };
+		} 
+	
+	
+		/* ============================================================
+		   시간 기반 대략적 인덱스 추정
+		============================================================ */
+		function estimateIndexByTime(schedule, stops, nowMin) {
+		
+		  let prevStopId = null;
+		
+		  for (let i = 0; i < schedule.length; i++) {
+		    const t = parseHHMM(schedule[i].time);
+		    if (t <= nowMin) prevStopId = schedule[i].stopId;
+		    else break;
+		  }
+		
+		  if (!prevStopId) return 0;
+		
+		  const idx = stops.findIndex(s => s.id === prevStopId);
+		  if (idx < 0) return 0;
+		
+		  return Math.min(idx, stops.length - 2);
+		}
+		
+		
+		/* ============================================================
+		   구간 시간표 보간
+		============================================================ */
+		function estimateSegTime(schedule, fromId, toId, ratio) {
+		
+		  const fromS = schedule.find(s => s.stopId === fromId);
+		  const toS   = schedule.find(s => s.stopId === toId);
+		  if (!fromS || !toS) return null;
+		
+		  let fromMin = parseHHMM(fromS.time);
+		  let toMin   = parseHHMM(toS.time);
+		
+		  if (toMin < fromMin) toMin += 1440;
+		
+		  return fromMin + (toMin - fromMin) * ratio;
+		} 
+		
+	
+		/* ===============================
+		   거리 계산
+		================================= */
+		function distanceMeter(a, b) {
+		  const latScale = 111320;
+		  const lngScale = 111320 * Math.cos(a.lat * Math.PI / 180);
+		  const dx = (a.lat - b.lat) * latScale;
+		  const dy = (a.lng - b.lng) * lngScale;
+		  return Math.sqrt(dx * dx + dy * dy);
+		}
+		
+		function projectPoint(p, a, b) {
+		  const refLat = p.lat * Math.PI / 180;
+		  const latScale = 111320;
+		  const lngScale = 111320 * Math.cos(refLat);
+		
+		  const ax = a.lng * lngScale, ay = a.lat * latScale;
+		  const bx = b.lng * lngScale, by = b.lat * latScale;
+		  const px = p.lng * lngScale, py = p.lat * latScale;
+		
+		  const abx = bx - ax, aby = by - ay;
+		  const apx = px - ax, apy = py - ay;
+		
+		  const abLen2 = abx * abx + aby * aby;
+		  if (abLen2 === 0) return null;
+		
+		  let t = (apx * abx + apy * aby) / abLen2;
+		  t = Math.max(0, Math.min(1, t));
+		
+		  const projX = ax + abx * t;
+		  const projY = ay + aby * t;
+		
+		  const dx = px - projX;
+		  const dy = py - projY;
+		
+		  return { ratio: t, dist: Math.sqrt(dx * dx + dy * dy) };
+		}
+
+
+		/* ===============================
+		   정류장 수집
+		================================= */
+		function getStops(route) {
+		  const panel = getPanel(route);
+		  if (!panel) return [];
+		
+		  const stops = [];
+		
+		  const start = panel.querySelector(".route-map__title");
+		  if (start?.dataset.stopId) {
+		    const c = getStopCoord(start.dataset.stopId);
+		    if (c) stops.push({ id: start.dataset.stopId, lat: c.lat, lng: c.lng, top: 0 });
+		  }
+		
+		  const labels = [...panel.querySelectorAll(".route-map__label")];
+		  labels.forEach(el => {
+		    const stopId = el.dataset.stopId;
+		    // [CHANGED] 원본은 dataset.style까지 보는데 실제 HTML은 style="--stop-top: xx%" 형태
+		    const topStr = el.style.getPropertyValue("--stop-top");
+		    if (!stopId || !topStr) return;
+		
+		    const c = getStopCoord(stopId);
+		    if (!c) return;
+		
+		    stops.push({ id: stopId, lat: c.lat, lng: c.lng, top: parseFloat(topStr) });
+		  });
+		
+		  const end = panel.querySelector(".route-map__destination");
+		  if (end?.dataset.stopId) {
+		    const c = getStopCoord(end.dataset.stopId);
+		    if (c) stops.push({ id: end.dataset.stopId, lat: c.lat, lng: c.lng, top: 100 });
+		  }
+		
+		  if (route === "t2-loop") {
+		    const map = new Map(stops.map(s => [s.id, s]));
+		    const direction = getLoopDirection(route);
+		
+		    const FORWARD_ORDER = ["ICN_T2","ICN_T1_OUT","PARADISE_OUT","HYATT_OUT","MAPO_M","MAPO_GARDEN","YEONGDEUNGPO","GANGNAM","MYEONGDONG","SEOUL_STATION"];
+		    const RETURN_ORDER  = ["SEOUL_STATION","ICN_T1_IN","ICN_T2"];
+		
+		    return (direction === "forward" ? FORWARD_ORDER : RETURN_ORDER)
+		      .map(id => map.get(id))
+		      .filter(Boolean);
+		  }
+		
+		  // 편도: schedule 기준 정렬 + 중복 제거 (원본 유지)
+		  const routeInfo = window.TIMETABLE.routes.find(r => r.id === route);
+		  const schedule = routeInfo?.schedule || [];
+		
+		  const orderedStops = [];
+		  schedule.forEach(s => {
+		    const found = stops.find(st => st.id === s.stopId);
+		    if (found) orderedStops.push(found);
+		  });
+		
+		  const uniqueStops = [];
+		  const seen = new Set();
+		  orderedStops.forEach(st => {
+		    if (!seen.has(st.id)) {
+		      uniqueStops.push(st);
+		      seen.add(st.id);
+		    }
+		  });
+		
+		  return uniqueStops;
+		}
+
+
+		// ETA 표시
+		function updateEta(panel, route, etaMin, seg, distToStopM) {
+		  const etaEl = panel.querySelector("[data-field^='eta']");
+		  if (!etaEl) return;
+		  
+		  const lang = window.getCurrentLang ? window.getCurrentLang() : "ko"; 
+		   
+		  // 정보 없음
+		  if (etaMin == null) {
+		    etaEl.innerHTML = `
+		      <strong data-i18n="realtime.eta.unknown">정보 없음</strong>
+		    `;
+		    
+		    window.applyTranslations?.(lang);
+		    return;
+		  }
+		   
+		  // 도착 완료
+		   if (isArrivedStable(route, seg, etaMin, distToStopM)) {
+		    etaEl.innerHTML = `<strong data-i18n="realtime.eta.arrived">도착 완료</strong>`;
+		    window.applyTranslations?.(lang);
+		    return;
+		  }
+		   
+		  // 곧 도착
+		  if (isArrivingSoonStable(route, seg, etaMin, distToStopM)) {
+		    etaEl.innerHTML = `
+		      <strong data-i18n="realtime.eta.soon">곧 도착</strong>
+		    `;
+		    window.applyTranslations?.(lang);
+		    return;
+		  }
+		  
+		   // 곧 도착 (1분 이하 and 250m 이하)
+		  if (etaMin <= 1 && distToStopM <= 250) {
+		    etaEl.innerHTML = `
+		      <strong data-i18n="realtime.eta.soon">곧 도착</strong>
+		    `;
+		    window.applyTranslations?.(lang);
+		    return;
+		  } 
+		  
+		  // 일반 ETA
+		  etaEl.innerHTML = `
+		    <span data-i18n="realtime.eta">도착예정:</span>
+		    <strong>
+		      ${etaMin}
+		      <span data-i18n="realtime.eta.unit">분</span>
+		    </strong>
+		  `; 
+		  
+		  window.applyTranslations?.(lang);
+		}
+
+		
+		// 다음 정류장 하이라이트
+		function highlightNextStop(panel, toStopId) {
+		
+		  // 기존 강조 제거
+		  panel.querySelectorAll(".is-next-stop")
+		    .forEach(el => el.classList.remove("is-next-stop"));
+		
+		  // 하단 리스트 강조
+		  const listItem = panel.querySelector(
+		    `.route-map__stops li[data-stop-id="${toStopId}"]`
+		  );
+		  if (listItem) {
+		    listItem.classList.add("is-next-stop");
+		  }
+		
+		  // 노선도 옆 라벨 강조
+		  const labelItem = panel.querySelector(
+		    `.route-map__label[data-stop-id="${toStopId}"]`
+		  );
+		  if (labelItem) {
+		    labelItem.classList.add("is-next-stop");
+		  }
+		}
+
+
+		/* ===============================
+		   idle일 때: ETA만 waiting + (loop면 idle 위치 고정)
+		================================= */
+		function setBusXy(busRaw, route) {
+		  const panel = getPanel(route);
+		  if (!panel) return;
+		
+		  panel.classList.remove("is-waiting");
+		
+		  const idleInfo = getIdleInfo(route);
+		  if (idleInfo) {
+		    getEtaEls(panel, route).forEach(renderWaiting);
+		
+		    if (route === "t2-loop") {
+		      const ratio = getLoopRatio(idleInfo.stopId, route);
+		      moveBusAlongPath(route, ratio);
+		    }
+		    return;
+		  }
+		
+		  const bus = normalizeBus(busRaw);
+		  console.log("bus normalized:", bus);
+		  
+		  const stops = getStops(route);
+		  console.log("stops: ", stops); 
+		   
+		  if (stops.length < 2) return;
+		
+		  const seg = findSegmentByProjection(bus, stops, route);
+		  console.log("seg:", seg);
+ 
+		  
+		  if (!seg) return;
+		
+		  // 세그 히스테리시스 (원본 유지)
+		  (function applySegHysteresis() {
+		    const curMin = nowMinute();
+		    const prev = __segState.routes.get(route);
+		
+		    if (!prev) {
+		      __segState.routes.set(route, { fromId: seg.from.id, toId: seg.to.id, sinceMin: curMin });
+		      return;
+		    }
+		
+		    const same = prev.fromId === seg.from.id && prev.toId === seg.to.id;
+		    if (same) return;
+		
+		    const elapsed = curMin - prev.sinceMin;
+		
+		    const newTo = getStopCoord(seg.to.id);
+		    const distNewTo = newTo ? distanceMeter(bus, newTo) : Infinity;
+		
+		    if (elapsed < 2 && distNewTo > 250) {
+		      const a = stops.find(s => s.id === prev.fromId);
+		      const b = stops.find(s => s.id === prev.toId);
+		
+		      if (a && b) {
+		        const proj = projectPoint(bus, a, b);
+		        if (proj && proj.dist < 2500) {
+		          seg.from = a;
+		          seg.to = b;
+		          seg.ratio = proj.ratio;
+		          seg.index = stops.findIndex(s => s.id === a.id);
+		        }
+		      }
+		      return;
+		    }
+		
+		    __segState.routes.set(route, { fromId: seg.from.id, toId: seg.to.id, sinceMin: curMin });
+		  })();
+		
+		  const marker = getMarker(panel, route);
+		  if (!marker) return;
+		
+		  if (route === "t2-loop") {
+		    marker.style.setProperty("--bus-offset-y", "0px");
+		
+		    const startRatio = getLoopRatio(seg.from.id, route);
+		    const endRatio   = getLoopRatio(seg.to.id, route);
+		
+		    if (startRatio == null || endRatio == null) return;
+		
+		    let delta = endRatio - startRatio;
+		    if (delta < -0.5) delta += 1;
+		    if (delta > 0.5)  delta -= 1;
+		
+		    let globalRatio = startRatio + delta * seg.ratio;
+		    if (globalRatio < 0) globalRatio += 1;
+		    if (globalRatio > 1) globalRatio -= 1;
+		
+		    globalRatio = Math.max(0, Math.min(1, globalRatio));
+		
+		    const isAirportForced =
+		      seg.from.id === "ICN_T2" ||
+		      seg.from.id === "ICN_T1_OUT" ||
+		      seg.from.id === "PARADISE_OUT";
+		
+		    if (!isAirportForced) {
+		      const snappedRatio = snapToStopIfNear(bus, seg, route);
+		      if (snappedRatio != null) globalRatio = snappedRatio;
+		    }
+		
+		    const etaMin = calcNextStopEtaStable(seg, route, bus);
+		    const stopCoord = getStopCoord(seg.to.id);
+		    const distToStopM = stopCoord ? distanceMeter(bus, stopCoord) : Infinity;
+				
+				console.log("etaMin: ", etaMin); 
+				console.log("distance: ", distToStopM); 
+				
+		    updateEta(panel, route, etaMin, seg, distToStopM);
+		    highlightNextStop(panel, seg.to.id);
+		    moveBusAlongPath(route, globalRatio);
+		    return;
+		  }
+		
+		  const top = seg.from.top + (seg.to.top - seg.from.top) * seg.ratio;
+		  marker.style.top = `${top}%`;
+		
+		  const etaMin = calcNextStopEtaStable(seg, route, bus);
+		  const stopCoord = getStopCoord(seg.to.id);
+		  const distToStopM = stopCoord ? distanceMeter(bus, stopCoord) : Infinity;
+			
+			console.log("etaMin: ", etaMin); 
+			console.log("distance: ", distToStopM);  
+				
+		  updateEta(panel, route, etaMin, seg, distToStopM);
+		  highlightNextStop(panel, seg.to.id);
+		}
+		
+		
+		/* ===============================
+		   비활성 노선은 “위치 건드리지 말고 ETA만 waiting”
+		================================= */
+		async function callBusLocation() {
+		  console.log("callBusLocation 실행");
+		
+		  if (__isFetching) return;
+		  __isFetching = true;
+		
+		  try {
+		    const busRaw = await fetchBusLocation();
+		    if (busRaw) __lastBusRaw = busRaw;
+		  } catch (e) {
+		    console.error("API 실패:", e);
+		  }
+		
+		  __isFetching = false;
+		
+		  if (!__lastBusRaw) {
+		    showWaitingStateAll();
+		    return;
+		  }
+		
+		  const operatingRoute = getOperatingRoute();
+		
+		  if (!operatingRoute) {
+		    const endedRoute = getRecentlyEndedRoute();
+		    if (endedRoute) {
+		      showArrivedState(endedRoute);
+		      return;
+		    }
+		    showWaitingStateAll();
+		    return;
+		  }
+		
+		  document.querySelectorAll(".route-tab").forEach(t => t.classList.remove("is-active"));
+		  document.querySelectorAll(".route-map__panel").forEach(p => p.classList.remove("is-active"));
+		
+		  document.querySelector(`.route-tab[data-route="${operatingRoute}"]`)?.classList.add("is-active");
+		  getPanel(operatingRoute)?.classList.add("is-active");
+		
+		  // 활성 노선만 위치 계산
+		  setBusXy(__lastBusRaw, operatingRoute);
+		
+		  // 비활성 노선: 위치는 건드리지 않고 ETA만 대기 표시
+		  document.querySelectorAll(".route-map__panel").forEach(panel => {
+		    const route = panel.dataset.routePanel;
+		    if (route !== operatingRoute) {
+		      getEtaEls(panel, route).forEach(renderWaiting);
+		    }
+		  });
+		}
+
+
+		document.addEventListener("DOMContentLoaded", () => {
+	
+		  if (!TEST_MODE) {
+		    // 실제 API 모드
+		    callBusLocation();
+		    return;
+		  }
+		
+		  callBusLocation();
+	});
+
+
+
+		
+		</script>
+
+  </head>
+  <body>
+    <div class="app">
+      <header class="gnb">
+        <div class="gnb__inner">
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo1.svg" alt="KICC" />
+          </a>
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo2.svg" alt="Easy Tax Refund" />
+          </a>
+        </div>
+      </header>
+
+      <section class="realtime-visual">
+        <div class="realtime-visual__inner">
+          <div class="realtime-visual__back">
+            <a class="realtime-visual__back-link" href="index.html" aria-label="이전 페이지">
+              <img src="img/icon-arrow-right.svg" alt="" />
+            </a>
+            <span data-i18n="realtime.visual.title">실시간 위치</span>
+          </div>
+          <div class="realtime-visual__media">
+            <img src="img/tiger-hello.png" alt="" />
+          </div>
+        </div>
+      </section>
+
+      <main class="realtime">
+        <section class="route-tabs fade-up" aria-label="노선 선택">
+          <button class="route-tab is-active" type="button" data-route="t2-loop">
+            <span data-i18n="realtime.tab1">1회차 인천공항 2터미널 -> 서울역 (왕복)</span>
+          </button>
+          <button class="route-tab" type="button" data-route="t2-seoul">
+            <span data-i18n="realtime.tab2">2회차 인천공항 2터미널 –> 마포역 (편도)</span>
+          </button>
+        </section>
+
+        <section class="route-map fade-up" aria-label="버스 노선도">
+          <div class="route-map__panel is-active" data-route-panel="t2-loop">
+            <p class="route-map__title" data-field="current-route-name" data-stop-id="ICN_T2" data-i18n="realtime.stop.icn_t2">인천공항 T2</p>
+
+          <div class="route-map__body">
+            <div class="route-map__canvas">
+              <ul class="route-map__labels">
+                <li class="route-map__label" data-stop-name="인천공항 T1" data-stop-id="ICN_T1_IN" data-side="left" style="--stop-top: 13.4%" data-i18n="realtime.stop.icn_t1">
+                  인천공항 T1
+                </li>
+                <li class="route-map__label" data-stop-name="인천공항 T1" data-stop-id="ICN_T1_OUT" data-side="right" style="--stop-top: 13.4%" data-i18n="realtime.stop.icn_t1">
+                  인천공항 T1
+                </li>
+                <li class="route-map__label" data-stop-name="파라다이스호텔" data-stop-id="PARADISE_OUT" data-side="right" style="--stop-top: 23.8%" data-i18n="realtime.stop.paradise">
+                  파라다이스호텔
+                </li>
+                <li class="route-map__label" data-stop-name="인천하얏트호텔" data-stop-id="HYATT_OUT" data-side="right" style="--stop-top: 34.3%" data-i18n="realtime.stop.hyatt">
+                  인천하얏트호텔
+                </li>
+                <li class="route-map__label" data-stop-name="마포엠갤러리" data-stop-id="MAPO_M" data-side="right" style="--stop-top: 44.8%" data-i18n="realtime.stop.mapo_m">
+                  마포엠갤러리
+                </li>
+                <li class="route-map__label" data-stop-name="마포 가든호텔" data-stop-id="MAPO_GARDEN" data-side="right" style="--stop-top: 55.2%" data-i18n="realtime.stop.mapo_garden">
+                  마포 가든호텔
+                </li>
+                <li class="route-map__label" data-stop-name="영등포 타임스퀘어" data-stop-id="YEONGDEUNGPO" data-side="right" style="--stop-top: 65.7%" data-i18n="realtime.stop.yeongdeungpo">
+                  영등포 타임스퀘어
+                </li>
+                <li class="route-map__label" data-stop-name="고속터미널역" data-stop-id="GANGNAM" data-side="right" style="--stop-top: 76.2%" data-i18n="realtime.stop.gangnam">
+                  고속터미널역
+                </li>
+                <li class="route-map__label" data-stop-name="명동" data-stop-id="MYEONGDONG" data-side="right" style="--stop-top: 86.6%" data-i18n="realtime.stop.myeongdong">
+                  명동
+                </li>
+              </ul>
+
+              <svg class="route-map__svg"
+					      width="148"
+					      height="516"
+					      viewBox="0 0 148 516"
+					      fill="none"
+					      xmlns="http://www.w3.org/2000/svg">
+					
+					   <path
+					     id="loop-path"
+					     d="
+					       M 74 20
+					       A 58 58 0 0 1 132 78
+					       L 132 438
+					       A 58 58 0 0 1 74 496
+					       A 58 58 0 0 1 16 438
+					       L 16 78
+					       A 58 58 0 0 1 74 20
+					     "
+					     fill="none"
+					     stroke="#EE6916"
+					     stroke-width="4"
+					   />
+					    <circle cx="132" cy="69" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+							<circle cx="16" cy="69" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+							<circle cx="132" cy="123" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+							<circle cx="132" cy="177" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+							<circle cx="132" cy="231" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+							<circle cx="132" cy="285" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+							<circle cx="132" cy="339" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+							<circle cx="132" cy="393" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+							<circle cx="132" cy="447" r="6" fill="white" stroke="#EE6916" stroke-width="2"/>
+							<rect x="56" width="36" height="36" rx="18" fill="#00458C"/>
+							<path d="M79.3167 24.6L77.6667 17.0833L80.875 13.875C82.25 12.5 82.7083 10.6667 82.25 9.75C81.3333 9.29167 79.5 9.75 78.125 11.125L74.9167 14.3333L67.4 12.6833C66.9417 12.5917 66.575 12.775 66.3917 13.1417L66.1167 13.6C65.9333 14.0583 66.025 14.5167 66.3917 14.7917L71.25 18L69.4167 20.75H66.6667L65.75 21.6667L68.5 23.5L70.3333 26.25L71.25 25.3333V22.5833L74 20.75L77.2083 25.6083C77.4833 25.975 77.9417 26.0667 78.4 25.8833L78.8583 25.7C79.225 25.425 79.4083 25.0583 79.3167 24.6Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<rect x="56" y="480" width="36" height="36" rx="18" fill="#0054A6"/>
+							<path d="M79.5001 489.75H68.5001C67.4876 489.75 66.6667 490.571 66.6667 491.583V502.583C66.6667 503.596 67.4876 504.417 68.5001 504.417H79.5001C80.5126 504.417 81.3334 503.596 81.3334 502.583V491.583C81.3334 490.571 80.5126 489.75 79.5001 489.75Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M66.6667 497.083H81.3334" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M74 489.75V497.083" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M70.3333 504.417L68.5 507.167" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M79.5001 507.167L77.6667 504.417" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M70.3333 500.75H70.3433" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<path d="M77.6667 500.75H77.6767" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+							<g filter="url(#filter0_d_87_205)">
+							<path d="M124 258L132 266L140 258" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+							</g>
+							<g filter="url(#filter1_d_87_205)">
+							<path d="M113.799 469.142V480.456H125.113" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+							</g>
+							<g filter="url(#filter2_d_87_205)">
+							<path d="M106.142 39.4559H117.456V28.1422" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+							</g>
+							<g filter="url(#filter3_d_87_205)">
+							<path d="M24 266L16 258L8 266" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+							</g>
+							<g filter="url(#filter4_d_87_205)">
+							<path d="M36.4559 45.1127V33.799H25.1422" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+							</g>
+							<g filter="url(#filter5_d_87_205)">
+							<path d="M36.2196 470.719L24.9981 469.277L23.5564 480.499" stroke="#222222" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" shape-rendering="crispEdges"/>
+							</g>
+							<defs>
+							<filter id="filter0_d_87_205" x="122" y="256" width="20" height="14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+							<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+							<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+							<feOffset dy="2"/>
+							<feComposite in2="hardAlpha" operator="out"/>
+							<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+							<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_87_205"/>
+							<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_87_205" result="shape"/>
+							</filter>
+							<filter id="filter1_d_87_205" x="109.799" y="467.142" width="17.3137" height="17.3137" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+							<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+							<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+							<feOffset dx="-2" dy="2"/>
+							<feComposite in2="hardAlpha" operator="out"/>
+							<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+							<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_87_205"/>
+							<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_87_205" result="shape"/>
+							</filter>
+							<filter id="filter2_d_87_205" x="104.142" y="26.1422" width="17.3137" height="17.3137" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+							<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+							<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+							<feOffset dx="2" dy="2"/>
+							<feComposite in2="hardAlpha" operator="out"/>
+							<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+							<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_87_205"/>
+							<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_87_205" result="shape"/>
+							</filter>
+							<filter id="filter3_d_87_205" x="6" y="254" width="20" height="14" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+							<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+							<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+							<feOffset dy="-2"/>
+							<feComposite in2="hardAlpha" operator="out"/>
+							<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+							<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_87_205"/>
+							<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_87_205" result="shape"/>
+							</filter>
+							<filter id="filter4_d_87_205" x="23.1423" y="29.799" width="17.3135" height="17.3137" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+							<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+							<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+							<feOffset dx="2" dy="-2"/>
+							<feComposite in2="hardAlpha" operator="out"/>
+							<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+							<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_87_205"/>
+							<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_87_205" result="shape"/>
+							</filter>
+							<filter id="filter5_d_87_205" x="19.5562" y="465.277" width="18.6636" height="17.2219" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+							<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+							<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+							<feOffset dx="-2" dy="-2"/>
+							<feComposite in2="hardAlpha" operator="out"/>
+							<feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+							<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_87_205"/>
+							<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_87_205" result="shape"/>
+							</filter>
+							</defs>
+							</svg>
+
+              <div class="route-map__bus-wrap" data-field="bus-marker">
+                <img class="route-map__bus" src="img/bus-move.svg" alt="" />
+                <div class="route-map__eta" data-field="eta">
+                  <span data-i18n="realtime.eta">도착예정:</span>
+                  <strong><span data-field="eta-min">0</span><span data-i18n="realtime.eta.unit">분</span></strong>
+                </div>
+              </div>
+            </div>
+            <p class="route-map__destination" data-i18n="realtime.destination" data-stop-id="SEOUL_STATION">서울역</p>
+
+            <ul class="route-map__stops">
+              <li data-stop-id="ICN_T2" data-i18n="realtime.stop.icn_t2">인천공항 T2</li>
+              <li data-stop-id="ICN_T1_OUT" data-i18n="realtime.stop.icn_t1">인천공항 T1</li>
+              <li data-stop-id="PARADISE_OUT" data-i18n="realtime.stop.paradise">파라다이스호텔</li>
+              <li data-stop-id="HYATT_OUT" data-i18n="realtime.stop.hyatt">인천하얏트호텔</li>
+              <li data-stop-id="MAPO_M" data-i18n="realtime.stop.mapo_m">마포엠갤러리</li>
+              <li data-stop-id="MAPO_GARDEN" data-i18n="realtime.stop.mapo_garden">마포 가든호텔</li>
+              <li data-stop-id="YEONGDEUNGPO" data-i18n="realtime.stop.yeongdeungpo">영등포 타임스퀘어</li>
+              <li data-stop-id="GANGNAM" data-i18n="realtime.stop.gangnam">고속터미널역</li>
+              <li data-stop-id="MYEONGDONG" data-i18n="realtime.stop.myeongdong">명동</li>
+              <li data-stop-id="SEOUL_STATION" data-i18n="realtime.stop.seoul_station">서울역</li>
+              <li data-stop-id="ICN_T1_IN" data-i18n="realtime.stop.icn_t1_in">인천공항 T1</li>
+            </ul>
+          </div>
+          </div>
+
+          <div class="route-map__panel" data-route-panel="t2-seoul">
+            <header class="route-map__header">
+              <p class="route-map__title" data-field="current-route-name-2" data-stop-id="ICN_T2" data-i18n="realtime.stop.icn_t2">인천공항 T2</p>
+            </header>
+
+            <div class="route-map__body">
+              <div class="route-map__canvas route-map__canvas--narrow">
+                <ul class="route-map__labels">
+                  <li class="route-map__label route-map__label--t2" data-stop-name="인천공항 T1" data-stop-id="ICN_T1_OUT" data-side="right" style="--stop-top: 8%" data-i18n="realtime.stop.icn_t1">
+                    인천공항 T1
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="파라다이스호텔" data-stop-id="PARADISE_OUT" data-side="right" style="--stop-top: 20%" data-i18n="realtime.stop.paradise">
+                    파라다이스호텔
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="인천하얏트호텔" data-stop-id="HYATT_OUT" data-side="right" style="--stop-top: 32%" data-i18n="realtime.stop.hyatt">
+                    인천하얏트호텔
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="영등포 타임스퀘어" data-stop-id="YEONGDEUNGPO" data-side="right" style="--stop-top: 44%" data-i18n="realtime.stop.yeongdeungpo">
+                    영등포 타임스퀘어
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="고속터미널역" data-stop-id="GANGNAM" data-side="right" style="--stop-top: 56%" data-i18n="realtime.stop.gangnam">
+                    고속터미널역
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="명동" data-stop-id="MYEONGDONG" data-side="right" style="--stop-top: 68%" data-i18n="realtime.stop.myeongdong">
+                    명동
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="서울역" data-stop-id="SEOUL_STATION" data-side="right" style="--stop-top: 80%" data-i18n="realtime.stop.seoul_station">
+                    서울역
+                  </li>
+                  <li class="route-map__label route-map__label--t2" data-stop-name="마포엠갤러리" data-stop-id="MAPO_M" data-side="right" style="--stop-top: 92%" data-i18n="realtime.stop.mapo_m">
+                    마포엠갤러리
+                  </li>
+                </ul>
+
+                <img class="route-map__svg" src="img/bus-map02.svg" alt="" />
+
+                <div class="route-map__bus-wrap route-map__bus-wrap--narrow" data-field="bus-marker-2">
+                  <img class="route-map__bus" src="img/bus-move.svg" alt="" />
+                  <div class="route-map__eta route-map__eta--narrow" data-field="eta-2">
+                    <span data-i18n="realtime.eta">도착예정:</span>
+                    <strong><span data-field="eta-min-2">17</span><span data-i18n="realtime.eta.unit">분</span></strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p class="route-map__destination" data-i18n="realtime.destination.mapo_garden" data-stop-id="MAPO_GARDEN">마포 가든호텔</p>
+          </div>
+
+        </section>
+      </main>
+
+    </div>
+  </body>
+</html>

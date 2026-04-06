@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>버스 노선도</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script defer src="js/i18n.js"></script>
+    <script defer src="js/main.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="gnb">
+        <div class="gnb__inner">
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo1.svg" alt="KICC" />
+          </a>
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo2.svg" alt="Easy Tax Refund" />
+          </a>
+        </div>
+      </header>
+
+      <section class="loop-visual">
+        <div class="loop-visual__inner">
+          <div class="loop-visual__back">
+            <a class="loop-visual__back-link" href="index.html" aria-label="이전 페이지">
+              <img src="img/icon-arrow-right.svg" alt="" />
+            </a>
+            <span data-i18n="loop.visual.title">노선도 및 시간표</span>
+          </div>
+          <div class="loop-visual__media">
+            <img src="img/tiger-desk.png" alt="" />
+          </div>
+        </div>
+      </section>
+
+      <main class="loop">
+        <section class="route-tabs fade-up" aria-label="노선 선택">
+          <button class="route-tab is-active" type="button" data-route="loop">
+            <span data-i18n="loop.tab1">1회차 인천공항 2터미널 -> 서울역 (왕복)</span>
+          </button>
+          <button class="route-tab" type="button" data-route="oneway">
+            <span data-i18n="loop.tab2">2회차 인천공항 2터미널 –> 마포역 (편도)</span>
+          </button>
+        </section>
+
+        <section class="loop-route fade-up" aria-label="노선도">
+          <div class="route-map__panel is-active" data-route-panel="loop">
+            <div class="loop-route__body">
+              <div class="loop-route__map">
+                <img src="img/bus-loop-route.svg" alt="" />
+              </div>
+              <ul class="loop-route__list">
+                <li class="loop-route__item is-start loop-stop" role="button" tabindex="0" data-stop-name="인천공항 T2" data-stop-id="ICN_T2">
+                  <span class="loop-route__time" data-field="time">09:00</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.icn_t2_departure">인천공항 T2(출발)</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="인천공항 T1" data-stop-id="ICN_T1_OUT">
+                  <span class="loop-route__time">09:20</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.icn_t1">인천공항 T1</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="파라다이스호텔" data-stop-id="PARADISE_OUT">
+                  <span class="loop-route__time">09:25</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.paradise">파라다이스호텔</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="인천하얏트호텔" data-stop-id="HYATT_OUT">
+                  <span class="loop-route__time">09:30</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.hyatt">인천하얏트호텔</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="마포엠갤러리" data-stop-id="MAPO_M">
+                  <span class="loop-route__time">10:30</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.mapo_m">마포엠갤러리</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="마포 가든호텔" data-stop-id="MAPO_GARDEN">
+                  <span class="loop-route__time">10:40</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.mapo_garden">마포 가든호텔</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="영등포 타임스퀘어" data-stop-id="YEONGDEUNGPO">
+                  <span class="loop-route__time">10:55</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.yeongdeungpo">영등포 타임스퀘어</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="고속터미널역" data-stop-id="GANGNAM">
+                  <span class="loop-route__time">11:30</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.gangnam">고속터미널역</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="명동" data-stop-id="MYEONGDONG">
+                  <span class="loop-route__time">12:00</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.myeongdong">명동</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="서울역(도착)" data-stop-id="SEOUL_STATION">
+                  <span class="loop-route__time">12:20</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.seoul_station_arrival">서울역(도착)</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="서울역(출발)" data-stop-id="SEOUL_STATION_OUT">
+                  <span class="loop-route__time">13:20</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.seoul_station_departure">서울역(출발)</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="인천공항 T1" data-stop-id="ICN_T1_IN">
+                  <span class="loop-route__time">14:25</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.icn_t1">인천공항 T1</span>
+                </li>
+                <li class="loop-route__item is-end loop-stop" role="button" tabindex="0" data-stop-name="인천공항 T2" data-stop-id="ICN_T2_END">
+                  <span class="loop-route__time">14:40</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.icn_t2_arrival">인천공항 T2(도착)</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="route-map__panel" data-route-panel="oneway">
+            <div class="loop-route__body">
+              <div class="loop-route__map">
+                <img src="img/bus-loop-route02.svg" alt="" />
+              </div>
+              <ul class="loop-route__list">
+                <li class="loop-route__item is-start loop-stop" role="button" tabindex="0" data-stop-name="인천공항 T2" data-stop-id="ICN_T2">
+                  <span class="loop-route__time">15:00</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.icn_t2_departure">인천공항 T2(출발)</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="인천공항 T1" data-stop-id="ICN_T1_OUT">
+                  <span class="loop-route__time">15:20</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.icn_t1">인천공항 T1</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="파라다이스호텔" data-stop-id="PARADISE_OUT">
+                  <span class="loop-route__time">15:25</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.paradise">파라다이스호텔</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="인천하얏트호텔" data-stop-id="HYATT_OUT">
+                  <span class="loop-route__time">15:30</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.hyatt">인천하얏트호텔</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="영등포 타임스퀘어" data-stop-id="YEONGDEUNGPO">
+                  <span class="loop-route__time">16:25</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.yeongdeungpo">영등포 타임스퀘어</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="고속터미널역" data-stop-id="GANGNAM">
+                  <span class="loop-route__time">16:50</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.gangnam">고속터미널역</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="명동" data-stop-id="MYEONGDONG">
+                  <span class="loop-route__time">17:20</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.myeongdong">명동</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="서울역" data-stop-id="SEOUL_STATION">
+                  <span class="loop-route__time">17:40</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.seoul_station_arrival">서울역</span>
+                </li>
+                <li class="loop-route__item loop-stop" role="button" tabindex="0" data-stop-name="마포엠갤러리" data-stop-id="MAPO_M">
+                  <span class="loop-route__time">18:05</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.mapo_m">마포엠갤러리</span>
+                </li>
+                <li class="loop-route__item is-end loop-stop" role="button" tabindex="0" data-stop-name="마포 가든호텔" data-stop-id="MAPO_GARDEN">
+                  <span class="loop-route__time">18:20</span>
+                  <span class="loop-route__name" data-field="stop-name" data-i18n="loop.stop.mapo_garden_arrival">마포 가든호텔(도착)</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <div class="stop-modal is-hidden" aria-hidden="true">
+        <div class="stop-modal__overlay"></div>
+        <div class="stop-modal__dialog" role="dialog" aria-modal="true">
+          <div class="stop-modal__header">
+            <h3 class="stop-modal__title" data-field="stop-modal-title">고속터미널역 정류장</h3>
+            <button class="stop-modal__close" type="button" aria-label="닫기">
+              <img src="img/exit.svg" alt="" />
+            </button>
+          </div>
+          <div class="stop-modal__map">
+					  <img class="stop-modal__map-img" src="img/exmap.png" alt="" />
+					</div>
+					
+					<div class="stop-modal__images">
+					  <img class="stop-modal__img1" src="img/eximg.png" alt="" />
+					  <img class="stop-modal__img2" src="img/eximg.png" alt="" />
+					</div>
+          <button class="stop-modal__action" type="button">닫기</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

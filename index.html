@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>투어버스 예약 시스템</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+    <link rel="stylesheet" href="css/style.css?v=20260128_2" />
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script defer src="js/i18n.js?v=20260128_1"></script>
+    <script defer src="js/main.js?v=20260202_1"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="gnb">
+        <div class="gnb__inner">
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo1.svg" alt="KICC" />
+          </a>
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo2.svg" alt="Easy Tax Refund" />
+          </a>
+        </div>
+      </header>
+
+      <section class="visual">
+        <div class="visual__inner">
+          <div class="visual__copy">
+            <h1 class="visual__title" data-i18n="main.visual.title">Easy Tax Refund</h1>
+            <p class="visual__sub" data-i18n="main.visual.sub">Free Tour Bus</p>
+          </div>
+          <div class="visual__media">
+            <img src="img/tiger-welcome.png" alt="" />
+          </div>
+        </div>
+
+        <nav class="lang-tabs" aria-label="언어 선택">
+          <button class="lang-tab is-active" type="button" data-lang="ko">
+            KO
+          </button>
+          <button class="lang-tab" type="button" data-lang="en">EN</button>
+          <button class="lang-tab" type="button" data-lang="zh">中文</button>
+          <button class="lang-tab" type="button" data-lang="ja">日本語</button>
+        </nav>
+      </section>
+
+      <main class="main">
+        <section class="main-actions fade-up" aria-label="빠른 이동">
+          <a class="action-button action-button--primary" href="https://forms.gle/UPPN2jHBLVXodzUL8" target="_blank" rel="noopener">
+            <span data-i18n="main.actions.reserve">예약하기</span>
+            <img class="action-button__icon" src="img/icon-arrow-right.svg" alt="" />
+          </a>
+          <a class="action-button action-button--dark js-realtime" href="realtime.html">
+            <span data-i18n="main.actions.realtime">실시간 위치</span>
+            <img class="action-button__icon" src="img/icon-arrow-right.svg" alt="" />
+          </a>
+          <a class="action-button action-button--dark" href="tax-refund-service.html">
+            <span data-i18n="main.actions.taxrefund">공항 면세환급 서비스</span>
+            <img class="action-button__icon" src="img/icon-arrow-right.svg" alt="" />
+          </a>
+          <a class="action-button action-button--qna action-button--qna-inline" href="qna.html">
+            <span data-i18n="main.qna.button">자주 묻는 질문</span>
+            <img class="action-button__icon" src="img/icon-arrow-right.svg" alt="" />
+          </a>
+        </section>
+
+        <section class="notice fade-up" aria-label="공지사항">
+          <button class="notice__header" type="button" aria-expanded="false">
+            <span class="notice__info">
+              <span class="notice__chip" data-i18n="main.notice.chip">공지</span>
+              <span class="notice__title" data-i18n="main.notice.title">
+                2026년 2월 1일 부로 투어버스 정식 운행합니다.
+              </span>
+            </span>
+            <img
+              class="notice__icon"
+              src="img/icon-arrow-down.svg"
+              alt=""
+            />
+          </button>
+          <div class="notice__content">
+            <p data-i18n="main.notice.body" data-i18n-html>
+              실시간 위치 서비스는 현재 준비 중으로 빠른 시일 내 제공드릴 수 있도록 하겠습니다.<br/>
+              문의사항은 etrs@kicc.co.kr로 문의 부탁드립니다.
+            </p>
+          </div>
+        </section>
+
+        <section class="route-cards fade-up" aria-label="노선 안내">
+          <a class="route-card" href="bus-loop.html?tab=loop">
+            <div class="route-card__content">
+              <h2 class="route-card__title" data-i18n="main.route1.title" data-i18n-html>
+                1회차<br />공항 → 도심 → 공항
+              </h2>
+              <p class="route-card__sub" data-i18n="main.route1.sub">
+                9:00출발
+              </p>
+              <span class="route-card__btn" data-i18n="main.route1.view">노선 보기</span>
+            </div>
+            <img class="route-card__image" src="img/card-bus.png" alt="" />
+          </a>
+          <a class="route-card" href="bus-loop.html?tab=oneway">
+            <div class="route-card__content">
+              <h2 class="route-card__title" data-i18n="main.route2.title" data-i18n-html>
+                2회차<br />공항 → 도심
+              </h2>
+              <p class="route-card__sub" data-i18n="main.route2.sub">
+                16:00출발
+              </p>
+              <span class="route-card__btn" data-i18n="main.route2.view">노선 보기</span>
+            </div>
+            <img class="route-card__image" src="img/card-bus.png" alt="" />
+          </a>
+        </section>
+
+        <section class="info-cards fade-up" aria-label="이용 안내">
+          <article class="info-card">
+            <h2 class="info-card__title" data-i18n="main.how.title">이용방법</h2>
+            <ol class="info-card__list">
+              <li data-i18n="main.how.item1">
+                홈페이지 ‘예약’ 버튼을 클릭하여 신청합니다.
+              </li>
+              <li>
+                <span data-i18n="main.how.item2">
+                  신청이 완료되면 잔여 좌석에 따라 예약 확정, 예약 대기 메일이 발송됩니다.
+                </span>
+              </li>
+              <li>
+                <span data-i18n="main.how.item3">
+                  발송된 메일에는 승차시 제시할 QR이 포함된 티켓 링크와 취소 링크가 포함되어있습니다.
+                </span>
+              </li>
+              <li>
+                <span data-i18n="main.how.item4">
+                  예약일자에 맞추어 탑승하고, 버스 기사님께 QR코드를 제시합니다.
+                </span>
+              </li>
+            </ol>
+          </article>
+
+          <article class="info-card">
+            <h2 class="info-card__title" data-i18n="main.guide.title">이용 안내사항</h2>
+            <ol class="info-card__list">
+              <li data-i18n="main.guide.item1">
+                홈페이지에서 사전 예약 시에만 가능합니다.
+              </li>
+              <li data-i18n="main.guide.item2">최대 2인까지만 동시 예약이 가능합니다.</li>
+              <li data-i18n="main.guide.item3">동일 이메일로는 중복 예약이 불가합니다.</li>
+              <li>
+                <span data-i18n="main.guide.item4">
+                  이메일로 온 티켓 및 QR코드를 기사에게 제시하여야 하며, QR코드가 없으면 탑승이 불가합니다.
+                </span>
+              </li>
+              <li>
+                <span data-i18n="main.guide.item5">
+                  버스는 노선도 내 정류장에 정차하며, 실제 버스 사진과 정류장 위치를 확인하여 탑승해주시기 바랍니다.
+                </span>
+              </li>
+              <li>
+                <span data-i18n="main.guide.item6">
+                  시간표를 꼭 확인하시기 바랍니다. 단, 도로 사정에 따라 지연될 수 있으므로 버스의 실시간 위치를 확인해주시기 바랍니다.
+                </span>
+              </li>
+              <li>
+                <span data-i18n="main.guide.item7">
+                  현장 인터넷 상황이 좋지 않을 경우를 대비하여 미리 티켓을 캡쳐해두는 것이 좋습니다.
+                </span>
+              </li>
+            </ol>
+          </article>
+        </section>
+
+        <section class="main-actions main-actions--spaced main-actions--qna fade-up" aria-label="자주 묻는 질문">
+          <a class="action-button action-button--qna" href="qna.html">
+            <span data-i18n="main.qna.button">자주 묻는 질문</span>
+            <img class="action-button__icon" src="img/icon-arrow-right.svg" alt="" />
+          </a>
+        </section>
+
+        <section class="contact-card fade-up" aria-label="문의사항 및 제휴요청">
+          <h2 class="contact-card__title" data-i18n="contact.title">문의사항 및 제휴요청</h2>
+          <p class="contact-card__sub" data-i18n="contact.email">etrs@kicc.co.kr</p>
+        </section>
+      </main> 
+      <!-- 실시간 위치 서비스 준비 중 팝업 -->
+      <div class="stop-modal is-hidden realtime-modal" aria-hidden="true">
+			  <div class="stop-modal__overlay"></div>
+			  <div class="stop-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="realtimeModalTitle">
+			    <div class="stop-modal__header">
+			      <h3 class="stop-modal__title" id="realtimeModalTitle" data-i18n="main.realtime.modal.title">준비 중</h3>
+			      <button class="stop-modal__close" type="button" aria-label="닫기">
+			        <img src="img/exit.svg" alt="" />
+			      </button>
+			    </div> 
+			    <div class="notice__content" style="display:block; border-top:0; padding:0; color:#5b6166;"
+			         data-i18n="main.realtime.modal.body" data-i18n-html>
+			      실시간 위치 서비스는 현재 준비 중입니다.<br/>
+						빠른 시일 내 제공드릴 수 있도록 하겠습니다.
+			    </div>
+			    <button class="stop-modal__action" type="button" data-i18n="main.realtime.modal.cta">확인</button>
+			  </div>
+			</div>
+    </div>
+    
+  </body>
+</html>

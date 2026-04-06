@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="ko" class="page-tax-refund">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>공항 바로현금 서비스</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="js/jquery-3.7.1.min.js"></script>
+    <script defer src="js/i18n.js"></script>
+    <script defer src="js/main.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <header class="gnb">
+        <div class="gnb__inner">
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo1.svg" alt="KICC" />
+          </a>
+          <a class="gnb__link" href="index.html">
+            <img class="gnb__logo" src="img/logo2.svg" alt="Easy Tax Refund" />
+          </a>
+        </div>
+      </header>
+
+      <section class="tax-visual">
+        <div class="tax-visual__inner">
+          <div class="tax-visual__copy">
+            <h1 class="tax-visual__title">공항 바로현금 서비스</h1>
+            <p class="tax-visual__sub">Safe · Easy · Fast</p>
+          </div>
+          <div class="tax-visual__media">
+            <img src="img/tiger-tax.png" alt="" />
+          </div>
+        </div>
+
+        <nav class="lang-tabs" aria-label="언어 선택">
+          <button class="lang-tab is-active" type="button" data-lang="ko">
+            KO
+          </button>
+          <button class="lang-tab" type="button" data-lang="en">EN</button>
+          <button class="lang-tab" type="button" data-lang="zh">中文</button>
+          <button class="lang-tab" type="button" data-lang="ja">日本語</button>
+        </nav>
+      </section>
+
+      <nav class="tax-tabs" aria-label="섹션 바로가기">
+        <a class="tax-tab" href="#compare">비교</a>
+        <a class="tax-tab" href="#promotion">프로모션</a>
+        <a class="tax-tab" href="#howto">이용방법</a>
+      </nav>
+
+      <main class="tax">
+        <section class="tax-section fade-up" aria-label="서비스 비교">
+
+          <div class="tax-feature-card">
+            <h2 class="tax-feature-card__title">공항 바로 환급 서비스 특징</h2>
+            <p class="tax-feature-card__text">
+              알리페이 / 위챗페이 자국통화로, 간편하고 신속 서비스
+            </p>
+            <p class="tax-feature-card__text">
+              도심 환급보다 안전하고 편리하며
+              <span class="tax-feature-card__point">빠른 실시간 환급</span> 서비스 보장
+            </p>
+          </div>
+
+          <div class="tax-compare-wrap" id="compare">
+            <h3 class="tax-compare__headline">인천공항 1터미널</h3>
+
+            <article class="tax-compare__card tax-compare__card--primary">
+              <span class="tax-compare__badge tax-compare__badge--on-gradient">공항 바로 환급</span>
+              <h3 class="tax-compare__title">현금 / 알리페이 / 위챗페이 공항 즉시 환급</h3>
+              <ul class="tax-compare__list">
+                <li>
+                  <img class="tax-check" src="img/check.svg" alt="" />
+                  <div class="tax-compare__item-body">
+                    <span class="tax-compare__item-title">실시간 환급</span>
+                    <span class="tax-compare__item-desc">즉시 처리, 출국 전 현금 바로 수령, 바로 입금</span>
+                  </div>
+                </li>
+                <li>
+                  <img class="tax-check" src="img/check.svg" alt="" />
+                  <div class="tax-compare__item-body">
+                    <span class="tax-compare__item-title">현금 4가지 통화 (KRW, USD, CNY, JPY)</span>
+                    <span class="tax-compare__item-desc">알리페이 / 위챗페이 즉시 환급 위안화(CNY)</span>
+                  </div>
+                </li>
+                <li>
+                  <img class="tax-check" src="img/check.svg" alt="" />
+                  <div class="tax-compare__item-body">
+                    <span class="tax-compare__item-title">직원의 정확한 안내</span>
+                    <span class="tax-compare__item-desc">현장에서 눈으로 환급 내역 확인</span>
+                  </div>
+                </li>
+              </ul>
+            </article>
+
+            <article class="tax-compare__card tax-compare__card--secondary">
+              <span class="tax-compare__badge tax-compare__badge--dark">
+                도심 환급 / 시내 키오스크 모바일 (환급봉투 QR 선택)
+              </span>
+              <h3 class="tax-compare__title">기존 도심 환급 · 모바일 환급</h3>
+              <ul class="tax-compare__list tax-compare__list--muted">
+                <li>
+                  <img class="tax-icon-x" src="img/tax-x.svg" alt="" />
+                  <div class="tax-compare__item-body">
+                    <span class="tax-compare__item-title">확인 불가</span>
+                    <span class="tax-compare__item-desc">회사가 달라 상세 확인이 불가</span>
+                  </div>
+                </li>
+                <li>
+                  <img class="tax-icon-x" src="img/tax-x.svg" alt="" />
+                  <div class="tax-compare__item-body">
+                    <span class="tax-compare__item-title">수단 변경 불가</span>
+                    <span class="tax-compare__item-desc">시내 신청 후 공항에서 수단 변경 불가</span>
+                  </div>
+                </li>
+                <li>
+                  <img class="tax-icon-x" src="img/tax-x.svg" alt="" />
+                  <div class="tax-compare__item-body">
+                    <span class="tax-compare__item-title">1개월 소요</span>
+                    <span class="tax-compare__item-desc">세관 확인 후 1달 이내 환급 처리</span>
+                  </div>
+                </li>
+              </ul>
+            </article>
+          </div>
+        </section>
+
+        <section id="promotion" class="tax-section fade-up" aria-label="프로모션">
+          <div class="tax-promo-wrap">
+            <h2 class="tax-promo-wrap__title">특별 외화 프로모션</h2>
+
+            <div class="tax-promo-head">
+              <div class="tax-promo-head__icon" aria-hidden="true">
+                <img src="img/tax-air.svg" alt="" />
+              </div>
+              <div class="tax-promo-head__text">
+                <p class="tax-promo-head__highlight">에어사이드 28번 GATE — 유인창구</p>
+                <h3 class="tax-promo-head__subtitle">공항 유인창구 환급</h3>
+              </div>
+            </div>
+
+            <dl class="tax-promo-rows">
+              <div class="tax-promo-row">
+                <dt>환급 장소</dt>
+                <dd>에어사이드 28번 GATE 유인창구 (24시간)</dd>
+              </div>
+              <div class="tax-promo-row">
+                <dt>환급 시기</dt>
+                <dd>현장 즉시 지급</dd>
+              </div>
+              <div class="tax-promo-row">
+                <dt>통화</dt>
+                <dd>KRW · USD · CNY · JPY 선택</dd>
+              </div>
+              <div class="tax-promo-row tax-promo-row--benefit">
+                <dt>특전</dt>
+                <dd>
+                  <div class="tax-promo-banner-wrap">
+                    <img
+                      class="tax-promo-banner"
+                      src="img/tax-refund-service.png"
+                      alt=""
+                    />
+                    <div class="tax-promo-banner__text">
+                      <p class="tax-promo-banner__line1">유인창구 고액 현금 환전 시</p>
+                      <p class="tax-promo-banner__line2">
+                        <strong>특별 선물 증정</strong> 🎁
+                        <span class="tax-promo-banner__note">(창구 환급 고객 한정)</span>
+                      </p>
+                    </div>
+                  </div>
+                </dd>
+              </div>
+            </dl>
+
+            <p class="tax-promo-footnote">
+              *공항 택스리펀드 센터 창구에서 환급하시는 고객에 한합니다
+            </p>
+          </div>
+        </section>
+
+        <section id="howto" class="tax-section fade-up" aria-label="이용 방법">
+          <div class="tax-howto-wrap">
+            <h2 class="tax-howto-wrap__title">키오스크 환급 이용 방법</h2>
+            <p class="tax-howto-note">
+              ※ 환급금액 75,000원 미만 또는 &apos;X&apos;싸인<br>(세관 승인 불필요, 바로 현금 수령)
+            </p>
+            <p class="tax-howto-note">
+              ※ 환급금액 75,000원 이상 (세관 확인 필요)
+            </p>
+            <img
+              class="tax-howto-hero"
+              src="img/tax00.png"
+              alt="세관반송품찾는곳 안내 카운터"
+            />
+
+            <div class="tax-amount-tabs tax-howto-tabs" role="tablist" aria-label="환급액 기준">
+              <button
+                type="button"
+                role="tab"
+                class="tax-amount-tab is-active"
+                id="tab-howto-under"
+                data-tab="under"
+                aria-selected="true"
+                aria-controls="panel-howto-under"
+              >
+                ₩ 75,000 미만
+              </button>
+              <button
+                type="button"
+                role="tab"
+                class="tax-amount-tab"
+                id="tab-howto-over"
+                data-tab="over"
+                aria-selected="false"
+                aria-controls="panel-howto-over"
+              >
+                ₩ 75,000 이상
+              </button>
+            </div>
+
+            <div class="tax-howto-panels">
+              <div
+                id="panel-howto-under"
+                class="tax-howto-panel is-active"
+                role="tabpanel"
+                data-panel="under"
+                aria-labelledby="tab-howto-under"
+              >
+                <ol class="tax-timeline">
+                  <li class="tax-timeline__step">
+                    <div class="tax-timeline__rail">
+                      <img
+                        class="tax-timeline__num"
+                        src="img/tax01-num.svg"
+                        alt="1"
+                      />
+                    </div>
+                    <div class="tax-timeline__body">
+                      <img
+                        class="tax-timeline__pic"
+                        src="img/tax01.png"
+                        alt=""
+                      />
+                      <h4 class="tax-timeline__title">언어 선택</h4>
+                      <p class="tax-timeline__sub">Select Language · 选择语言</p>
+                      <p class="tax-timeline__tag">키오스크 첫 화면에서 선택</p>
+                    </div>
+                  </li>
+                  <li class="tax-timeline__step">
+                    <div class="tax-timeline__rail">
+                      <img
+                        class="tax-timeline__num"
+                        src="img/tax02-num.svg"
+                        alt="2"
+                      />
+                    </div>
+                    <div class="tax-timeline__body">
+                      <img
+                        class="tax-timeline__pic"
+                        src="img/tax02.png"
+                        alt=""
+                      />
+                      <h4 class="tax-timeline__title">여권 스캔</h4>
+                      <p class="tax-timeline__sub">Scan Passport · 扫描护照</p>
+                      <p class="tax-timeline__tag">여권 필수 지참</p>
+                    </div>
+                  </li>
+                  <li class="tax-timeline__step">
+                    <div class="tax-timeline__rail">
+                      <img
+                        class="tax-timeline__num"
+                        src="img/tax03-num.svg"
+                        alt="3"
+                      />
+                    </div>
+                    <div class="tax-timeline__body">
+                      <img
+                        class="tax-timeline__pic"
+                        src="img/tax03.png"
+                        alt=""
+                      />
+                      <h4 class="tax-timeline__title">환급전표 스캔</h4>
+                      <p class="tax-timeline__sub">Scan Tax Slip · 扫描退税单</p>
+                      <p class="tax-timeline__tag">일반 영수증 불가 — 환급전표만 가능</p>
+                    </div>
+                  </li>
+                  <li class="tax-timeline__step">
+                    <div class="tax-timeline__rail">
+                      <img
+                        class="tax-timeline__num"
+                        src="img/tax04-1-num.svg"
+                        alt="4"
+                      />
+                    </div>
+                    <div class="tax-timeline__body">
+                      <img
+                        class="tax-timeline__pic"
+                        src="img/tax05.png"
+                        alt=""
+                      />
+                      <h4 class="tax-timeline__title">현금 수령</h4>
+                      <p class="tax-timeline__sub">Cash Refund · 领取现金</p>
+                      <p class="tax-timeline__tag">30초 소요</p>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+              <div
+                id="panel-howto-over"
+                class="tax-howto-panel"
+                role="tabpanel"
+                data-panel="over"
+                aria-labelledby="tab-howto-over"
+                hidden
+              >
+                <ol class="tax-timeline">
+                  <li class="tax-timeline__step">
+                    <div class="tax-timeline__rail">
+                      <img
+                        class="tax-timeline__num"
+                        src="img/tax01-num.svg"
+                        alt="1"
+                      />
+                    </div>
+                    <div class="tax-timeline__body">
+                      <img
+                        class="tax-timeline__pic"
+                        src="img/tax01.png"
+                        alt=""
+                      />
+                      <h4 class="tax-timeline__title">언어 선택</h4>
+                      <p class="tax-timeline__sub">Select Language · 选择语言</p>
+                      <p class="tax-timeline__tag">키오스크 첫 화면에서 선택</p>
+                    </div>
+                  </li>
+                  <li class="tax-timeline__step">
+                    <div class="tax-timeline__rail">
+                      <img
+                        class="tax-timeline__num"
+                        src="img/tax02-num.svg"
+                        alt="2"
+                      />
+                    </div>
+                    <div class="tax-timeline__body">
+                      <img
+                        class="tax-timeline__pic"
+                        src="img/tax02.png"
+                        alt=""
+                      />
+                      <h4 class="tax-timeline__title">여권 스캔</h4>
+                      <p class="tax-timeline__sub">Scan Passport · 扫描护照</p>
+                      <p class="tax-timeline__tag">여권 필수 지참</p>
+                    </div>
+                  </li>
+                  <li class="tax-timeline__step">
+                    <div class="tax-timeline__rail">
+                      <img
+                        class="tax-timeline__num"
+                        src="img/tax03-num.svg"
+                        alt="3"
+                      />
+                    </div>
+                    <div class="tax-timeline__body">
+                      <img
+                        class="tax-timeline__pic"
+                        src="img/tax03.png"
+                        alt=""
+                      />
+                      <h4 class="tax-timeline__title">환급전표 스캔</h4>
+                      <p class="tax-timeline__sub">Scan Tax Slip · 扫描退税单</p>
+                      <p class="tax-timeline__tag">일반 영수증 불가 — 환급전표만 가능</p>
+                    </div>
+                  </li>
+                  <li class="tax-timeline__step">
+                    <div class="tax-timeline__rail">
+                      <img
+                        class="tax-timeline__num"
+                        src="img/tax04-2-num.svg"
+                        alt="4"
+                      />
+                    </div>
+                    <div class="tax-timeline__body">
+                      <img
+                        class="tax-timeline__pic"
+                        src="img/tax04.png"
+                        alt=""
+                      />
+                      <h4 class="tax-timeline__title">세관 승인</h4>
+                      <p class="tax-timeline__sub">Customs Check · 海关盖章</p>
+                      <p class="tax-timeline__tag">75,000원↑ 필요 또는 랜덤</p>
+                    </div>
+                  </li>
+                  <li class="tax-timeline__step">
+                    <div class="tax-timeline__rail">
+                      <img
+                        class="tax-timeline__num"
+                        src="img/tax05-num.svg"
+                        alt="5"
+                      />
+                    </div>
+                    <div class="tax-timeline__body">
+                      <img
+                        class="tax-timeline__pic"
+                        src="img/tax05.png"
+                        alt=""
+                      />
+                      <h4 class="tax-timeline__title">현금 수령</h4>
+                      <p class="tax-timeline__sub">Cash Refund · 领取现金</p>
+                      <p class="tax-timeline__tag">즉시 현금 지급</p>
+                    </div>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script>
+      (function () {
+        var nav = document.querySelector(".tax-tabs");
+        if (nav) {
+          var sectionLinks = nav.querySelectorAll(".tax-tab");
+          var sectionIds = ["compare", "promotion", "howto"];
+          var scrollOffset = 88;
+
+          function setSectionNavActive(id) {
+            sectionLinks.forEach(function (a) {
+              var on = a.getAttribute("href") === "#" + id;
+              a.classList.toggle("is-active", on);
+              if (on) a.setAttribute("aria-current", "true");
+              else a.removeAttribute("aria-current");
+            });
+          }
+
+          function clearSectionNavActive() {
+            sectionLinks.forEach(function (a) {
+              a.classList.remove("is-active");
+              a.removeAttribute("aria-current");
+            });
+          }
+
+          /**
+           * 비교 탭: (1) 히어로·특징 카드만 보일 때는 끔
+           * (2) 인천공항 제목이 보이거나 (3) 제목은 위로 지났지만 비교 카드가 남아 있고 프로모션 전이면 켬
+           */
+          function shouldShowCompareTab(compareRoot) {
+            var headline = compareRoot.querySelector(".tax-compare__headline");
+            var cr = compareRoot.getBoundingClientRect();
+            var vh =
+              window.innerHeight || document.documentElement.clientHeight;
+            var promoEl = document.getElementById("promotion");
+            if (!promoEl) return true;
+            var promoTop =
+              promoEl.getBoundingClientRect().top + window.scrollY;
+            var y = window.scrollY || window.pageYOffset;
+            if (y + 2 >= promoTop - scrollOffset) return false;
+
+            if (!headline) {
+              return cr.bottom > scrollOffset + 8 && cr.top < vh;
+            }
+
+            var hr = headline.getBoundingClientRect();
+            var headlineInView =
+              hr.bottom > scrollOffset + 12 && hr.top < vh - 24;
+            if (headlineInView) return true;
+
+            if (hr.top > vh - 4) return false;
+
+            var scrolledPastHeadline = hr.bottom < scrollOffset + 10;
+            var compareStillVisible =
+              cr.bottom > scrollOffset + 12 && cr.top < vh;
+
+            return scrolledPastHeadline && compareStillVisible;
+          }
+
+          function updateSectionNavFromScroll() {
+            var y = window.scrollY || window.pageYOffset;
+            var compareEl = document.getElementById("compare");
+            if (!compareEl) return;
+            var compareTop =
+              compareEl.getBoundingClientRect().top + window.scrollY;
+            if (y + 2 < compareTop - scrollOffset) {
+              clearSectionNavActive();
+              return;
+            }
+            var chosen = "compare";
+            for (var i = 0; i < sectionIds.length; i++) {
+              var el = document.getElementById(sectionIds[i]);
+              if (!el) continue;
+              var top =
+                el.getBoundingClientRect().top + window.scrollY;
+              if (top - scrollOffset <= y + 2) {
+                chosen = sectionIds[i];
+              }
+            }
+            if (
+              chosen === "compare" &&
+              !shouldShowCompareTab(compareEl)
+            ) {
+              clearSectionNavActive();
+              return;
+            }
+            setSectionNavActive(chosen);
+          }
+
+          var ticking = false;
+          window.addEventListener(
+            "scroll",
+            function () {
+              if (!ticking) {
+                window.requestAnimationFrame(function () {
+                  updateSectionNavFromScroll();
+                  ticking = false;
+                });
+                ticking = true;
+              }
+            },
+            { passive: true }
+          );
+          window.addEventListener("resize", updateSectionNavFromScroll);
+          window.addEventListener("hashchange", updateSectionNavFromScroll);
+          window.addEventListener("load", function () {
+            updateSectionNavFromScroll();
+            requestAnimationFrame(updateSectionNavFromScroll);
+          });
+          updateSectionNavFromScroll();
+        }
+      })();
+
+      (function () {
+        var tabs = document.querySelectorAll(".tax-howto-tabs .tax-amount-tab");
+        var panels = document.querySelectorAll(".tax-howto-panel");
+        if (!tabs.length || !panels.length) return;
+
+        function activate(tabId) {
+          tabs.forEach(function (t) {
+            var on = t.getAttribute("data-tab") === tabId;
+            t.classList.toggle("is-active", on);
+            t.setAttribute("aria-selected", on ? "true" : "false");
+          });
+          panels.forEach(function (p) {
+            var on = p.getAttribute("data-panel") === tabId;
+            p.classList.toggle("is-active", on);
+            if (on) p.removeAttribute("hidden");
+            else p.setAttribute("hidden", "");
+          });
+        }
+
+        tabs.forEach(function (tab) {
+          tab.addEventListener("click", function () {
+            activate(tab.getAttribute("data-tab"));
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
