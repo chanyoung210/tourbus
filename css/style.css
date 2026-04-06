@@ -994,10 +994,14 @@ html.page-tax-refund .tax-visual .lang-tab {
 }
 
 /* 75,000원 미만 — 2열 (좌: num SVG 세로선, 우: 이미지·텍스트·배지) */
+/* 웹 너비가 커져도 2열 덩어리만 유지·가운데 (우측 1fr 무한 확장으로 num이 시각적으로 왼쪽으로 밀리는 현상 방지) */
 .tax-timeline {
   list-style: none;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
+  width: 100%;
+  max-width: 420px;
+  box-sizing: border-box;
 }
 
 .tax-timeline > li.tax-timeline__step {
@@ -1013,6 +1017,7 @@ html.page-tax-refund .tax-visual .lang-tab {
   margin: 0;
   padding: 0;
   min-height: 0;
+  max-width: 100%;
 }
 
 /*
