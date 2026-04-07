@@ -503,17 +503,18 @@ button {
   font-weight: 600;
 }
 
-.tax-tabs {
+/* 면세 페이지: 비주얼 아래 문서 흐름에 두고, 스크롤 시 GNB(36px) 바로 아래에 붙음 */
+html.page-tax-refund .tax-tabs {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   background: #222222;
   border-radius: 0 0 4px 4px;
   overflow: hidden;
-  position: fixed;
+  position: sticky;
   top: 36px;
-  left: 0;
-  right: 0;
   z-index: 900;
+  width: 100%;
+  margin: 0;
 }
 
 .tax-tab {
@@ -533,6 +534,7 @@ button {
   color: #ffffff;
   font-weight: 600;
   background: rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 -3px 0 #e41d39;
 }
 
 .tax-tab + .tax-tab {
@@ -567,13 +569,13 @@ html.page-tax-refund {
   scroll-margin-top: calc(36px + 44px + 8px);
 }
 
-/* 면세환급 페이지 비주얼만: GNB+섹션탭(80px) 아래 여백·하단 여백 균형 (다른 페이지 미적용) */
+/* 면세환급 페이지 비주얼만: GNB(36px) 아래부터 (섹션 탭은 비주얼 아래 흐름에 배치) */
 html.page-tax-refund .tax-visual {
   display: flex;
   flex-direction: column;
   align-items: stretch;
   box-sizing: border-box;
-  padding: 116px 16px 36px;
+  padding: 68px 16px 36px;
 }
 
 html.page-tax-refund .tax-visual__inner {
@@ -1800,6 +1802,40 @@ html[lang="ja"] .loop-route__name {
 
 
 @media (max-width: 480px) {
+  html[lang="en"].page-tax-refund .tax-compare__badge {
+    height: auto;
+    min-height: 24px;
+    padding: 4px 8px;
+    font-size: 11px;
+    line-height: 1.25;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  html[lang="en"].page-tax-refund .tax-promo-banner__text {
+    padding: 8px 10px;
+  }
+
+  html[lang="en"].page-tax-refund .tax-promo-banner__line1 {
+    margin: 0 0 4px;
+    font-size: 11px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
+  html[lang="en"].page-tax-refund .tax-promo-banner__line2 {
+    font-size: 12px;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  html[lang="en"].page-tax-refund .tax-promo-banner__note {
+    display: block;
+    font-size: 10px;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+
   .route-map__eta {
     font-size: 13px;
     padding: 6px 10px;
@@ -1841,7 +1877,7 @@ html[lang="ja"] .loop-route__name {
   }
 
   html.page-tax-refund .tax-visual {
-    padding: 112px 24px 40px;
+    padding: 68px 24px 40px;
   }
 
   .lang-tabs {
@@ -1867,10 +1903,9 @@ html[lang="ja"] .loop-route__name {
   }
 
   html.page-tax-refund .tax-tabs {
-    max-width: none;
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
     border-radius: 0 0 4px 4px;
   }
 
