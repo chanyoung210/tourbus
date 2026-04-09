@@ -628,10 +628,26 @@ html.page-tax-refund .tax-visual .lang-tab {
 }
 
 .tax-compare__headline {
-  margin: 0;
-  font-size: 18px;
+  margin: -18px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% + 40px);
+  margin-left: -20px;
+  margin-right: -20px;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border-radius: 12px 12px 0 0;
+  background: #00458c;
+  font-size: 22px;
   font-weight: 700;
-  color: #222222;
+  color: #ffffff;
+}
+
+.tax-compare__headline-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
 }
 
 .tax-compare__card {
